@@ -2,7 +2,7 @@
  * 全站样式
  * 设计语言：clay（黏土）拟物，浅色纸面 + 凸凹阴影 + 橙色强调。
  * 结构大致为：字体 @font-face → 设计令牌(:root) → 基础层 → HUD/菜单 → 各场景组件 → 移动端适配。
- * 版权归 Vipin Pathak 所有，仅供学习研究。
+ * 版权归  所有，仅供学习研究。
  */
 .joystick-touch-zone {
   position: fixed;

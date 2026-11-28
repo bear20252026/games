@@ -1,7 +1,7 @@
 curllmooha — third-party notices
 ==================================
 
-This site is built by Vipin Pathak. The parts below come from other people
+This site is built. The parts below come from other people
 and are used under their licences.
 
 

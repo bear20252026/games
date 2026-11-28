@@ -37290,7 +37290,7 @@ const v_ = "/assets/blob-b1Pb5j2E.webp",
   k_ = "/assets/tile-break-DaYkLUKd.webp",
   I_ = "/assets/twisted-dna-BqtOgqB0.webp",
   F_ = "/assets/two-shores-YkroSTtX.webp",
-  D_ = "vipin pathak",
+  D_ = "",
   G_ = "curllmooha",
   L_ = "hi, i’m vipin",
   N_ = [
@@ -37318,8 +37318,8 @@ const v_ = "/assets/blob-b1Pb5j2E.webp",
   W0 = [
     {
       label: "email",
-      value: "vipinpathak018@gmail.com",
-      href: "mailto:vipinpathak018@gmail.com",
+      value: "018@gmail.com",
+      href: "mailto:018@gmail.com",
     },
     {
       label: "x / twitter",
@@ -37328,8 +37328,8 @@ const v_ = "/assets/blob-b1Pb5j2E.webp",
     },
     {
       label: "linkedin",
-      value: "vipin pathak",
-      href: "https://www.linkedin.com/in/vipinpathak018",
+      value: "",
+      href: "https://www.linkedin.com/in/018",
     },
     {
       label: "instagram",
@@ -37475,7 +37475,7 @@ const v_ = "/assets/blob-b1Pb5j2E.webp",
   yP = Bc.map((t) => K0[t.slug] ?? null),
   H_ = "/vipin-pathak-resume.pdf",
   Cn = {
-    name: "Vipin Pathak",
+    name: "",
     role: "creative developer",
     location: "New Delhi, India",
     summary:
@@ -41295,7 +41295,7 @@ function Z4() {
 typeof window < "u" &&
   (Pw(),
   console.info(
-    `%ccurllmooha%c  built by vipin pathak
+    `%ccurllmooha%c  built by 
 
 thanks to open source: the terrain groundwork comes from infinite-terrain by misha kiiatkin (MIT)
 https://github.com/mesqme/infinite-terrain
@@ -41361,7 +41361,7 @@ function eP() {
       jsxRuntime.jsx("h1", {
         className: "site-title",
         children:
-          "Curllmooha: an interactive 3D portfolio by Vipin Pathak, creative developer",
+          "Curllmooha: an interactive 3D portfolio by , creative developer",
       }),
       cv && jsxRuntime.jsx(L4, {}),
       !h && jsxRuntime.jsx(qB, {}),
