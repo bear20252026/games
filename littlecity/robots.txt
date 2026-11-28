@@ -1,0 +1,7 @@
+# Little City: a peaceful, hand-drawn city builder. Every page is open to crawlers
+# except the developers' gallery of parts.
+User-agent: *
+Allow: /
+Disallow: /gallery/
+
+来源与版权信息未在本仓库公开收录。

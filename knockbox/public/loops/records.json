@@ -1,0 +1,8 @@
+[
+  {
+    "id": "sozo",
+    "title": "Runes",
+    "by": "Sozo",
+    "loops": [{ "id": "runes", "name": "Runes", "key": "F# minor", "bpm": 82 }]
+  }
+]

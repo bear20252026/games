@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="48 24 220 220">
+  <!-- The Knockbox head, cropped tight on an orange tile so it reads at tab size -->
+  <clipPath id="tile"><rect x="48" y="24" width="220" height="220" rx="44"/></clipPath>
+  <g clip-path="url(#tile)">
+    <rect x="48" y="24" width="220" height="220" fill="#ff7a2b"/>
+  <defs>
+    <!-- Head in profile, neck, hooded shoulders -->
+    <path id="figure" d="M146 40 C104 40 74 70 72 116 C71 150 78 176 92 198 C96 208 96 218 92 228 C70 236 52 256 46 286 L246 286 C242 266 226 250 204 242 L200 230 C210 231 221 229 227 223 C232 218 233 211 229 205 C227 202 228 200 231 199 C237 197 239 193 237 189 C236 187 234 186 231 186 C236 185 239 182 238 178 C237 174 233 172 229 171 C237 169 244 165 243 159 C242 153 229 146 223 139 C226 130 225 120 220 112 C222 70 190 40 146 40 Z"/>
+    <!-- Bucket hat: crown and brim pulled low over the eyes -->
+    <path id="hat" d="M92 52 C120 38 172 36 200 48 L214 106 L254 128 C253 136 246 139 238 136 C196 122 112 128 62 154 C53 157 46 152 49 144 L80 112 Z"/>
+    <path id="band" d="M138 142 C127 106 129 74 139 42"/>
+    <g id="knocks">
+      <path d="M236 60 L248 40"/>
+      <path d="M250 80 L270 68"/>
+      <path d="M256 102 L278 100"/>
+    </g>
+  </defs>
+
+  <!-- Head thrown back, mid-nod -->
+  <g transform="translate(150 152) rotate(-9) scale(0.9) translate(-150 -160)">
+    <!-- Sticker backing -->
+    <g fill="#fff" stroke="#fff" stroke-width="18" stroke-linejoin="round" stroke-linecap="round">
+      <use href="#figure"/>
+      <use href="#hat"/>
+      <use href="#knocks" fill="none" stroke-width="22"/>
+    </g>
+    <circle cx="140" cy="168" r="50" fill="#fff"/>
+
+    <use href="#figure" fill="#111"/>
+
+    <!-- Light falling on the face and neck -->
+    <path fill="#fff" d="M150 126 L218 120 C221 128 221 133 219 139 C224 147 237 154 239 159 C238 164 232 166 224 168 C229 170 234 173 234 178 C234 182 230 183 226 185 C230 186 233 188 233 191 C233 194 230 196 226 197 C224 199 224 203 226 206 C229 211 228 216 224 220 C218 225 207 226 197 225 L199 239 C184 244 166 245 150 243 Z"/>
+
+    <!-- Feeling it: brow down hard, eye squeezed, biting the lip, a clean jaw -->
+    <path fill="#111" d="M191 135 L223 144 L222 151 C213 145 203 143 192 142 Z"/>
+    <path fill="none" stroke="#111" stroke-width="4.5" stroke-linecap="round" d="M196 152 C203 152 210 154 216 158"/>
+    <path fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" d="M196 152 L189 150"/>
+    <path fill="#111" d="M221 162 C225 160 229 162 230 166 C227 169 222 169 220 167 Z"/>
+    <path fill="none" stroke="#111" stroke-width="4" stroke-linecap="round" d="M207 180 C211 186 216 187 222 186"/>
+    <path fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round" d="M222 183 L233 183 L233 187 C229 189 226 189 222 187 Z"/>
+    <path fill="none" stroke="#111" stroke-width="3" stroke-linecap="round" d="M218 198 C222 200 227 200 230 198"/>
+    <path fill="#111" d="M150 203 C168 219 186 225 198 225 L199 230 C182 231 164 225 150 212 Z"/>
+
+    <!-- Hood and drawstring -->
+    <path fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" d="M96 226 C120 244 168 250 204 242"/>
+    <path fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" d="M176 249 C174 262 176 274 180 284"/>
+    <path fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" d="M74 252 C92 262 104 274 108 286"/>
+
+    <!-- Bucket hat -->
+    <use href="#hat" fill="#111" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+    <path fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" d="M82 111 C122 100 174 98 213 105"/>
+    <path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" d="M86 98 C124 88 172 86 210 92"/>
+    <path fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="7 6" d="M64 144 C112 120 196 114 244 129"/>
+    <path fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" d="M176 46 C180 62 184 78 187 92"/>
+    <rect x="96" y="62" width="20" height="13" rx="2" fill="#fff" transform="rotate(-8 106 68)"/>
+
+    <!-- Headphones -->
+    <use href="#band" fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round"/>
+    <use href="#band" fill="none" stroke="#111" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="140" cy="168" r="42" fill="#fff"/>
+    <circle cx="140" cy="168" r="37" fill="#111"/>
+    <circle cx="140" cy="168" r="25" fill="none" stroke="#fff" stroke-width="4"/>
+    <path d="M122 152 C128 144 138 140 148 141" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="140" cy="168" r="6" fill="#fff"/>
+
+    <!-- It knocks -->
+    <use href="#knocks" fill="none" stroke="#111" stroke-width="8" stroke-linecap="round"/>
+  </g>
+  </g>
+</svg>

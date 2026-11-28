@@ -1,0 +1,229 @@
+/* Stickers (ADR-0046): a picture and a shout, each for one thing a beat has got.
+   Drawn at 204 by 108 and sized in --k, one of the drawing's units, so a sticker
+   is one object at any size: the room's, the crate's, a page's. */
+.stk {
+  --k: 1px;
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: calc(var(--k) * 5) solid #fbf6e9;
+  box-shadow:
+    0 calc(var(--k) * 1) 0 rgba(0, 0, 0, 0.25),
+    0 calc(var(--k) * 5) calc(var(--k) * 9) rgba(0, 0, 0, 0.55);
+  line-height: 1;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.stk::before {
+  content: "";
+  position: absolute;
+  border: calc(var(--k) * 2.5) solid #1a1410;
+  pointer-events: none;
+}
+
+.stk img {
+  display: block;
+  flex: none;
+  max-width: none;
+}
+
+.stk b {
+  font-weight: 400;
+}
+
+/* The drums: a snare nobody has wiped down, flies and all */
+.stk-drums {
+  gap: calc(var(--k) * 8);
+  width: calc(var(--k) * 204);
+  height: calc(var(--k) * 108);
+  padding: 0 calc(var(--k) * 16) 0 calc(var(--k) * 10);
+  border-radius: calc(var(--k) * 9);
+  background: #f1e7c9;
+  color: #1a1410;
+}
+
+.stk-drums::before {
+  inset: calc(var(--k) * 4);
+  border-radius: calc(var(--k) * 5);
+}
+
+.stk-drums img {
+  width: calc(var(--k) * 82);
+  height: calc(var(--k) * 82);
+}
+
+.stk-drums b {
+  font-family: "Anton", "Bowlby One", sans-serif;
+  font-size: calc(var(--k) * 28);
+  line-height: 1.02;
+  letter-spacing: calc(var(--k) * 1);
+}
+
+/* The feel: a dart dead centre in a back pocket, stitched like denim */
+.stk-pocket {
+  gap: calc(var(--k) * 6);
+  width: calc(var(--k) * 216);
+  height: calc(var(--k) * 106);
+  padding-right: calc(var(--k) * 6);
+  border-radius: calc(var(--k) * 8);
+  background: #1a1410;
+  color: #f4ecd6;
+}
+
+.stk-pocket::before {
+  inset: calc(var(--k) * 5);
+  border: calc(var(--k) * 2) dashed #ff7a2b;
+  border-radius: calc(var(--k) * 4);
+}
+
+.stk-pocket img {
+  width: calc(var(--k) * 92);
+  height: calc(var(--k) * 92);
+  margin-left: calc(var(--k) * -4);
+}
+
+.stk-pocket b {
+  font-family: "Permanent Marker", cursive;
+  font-size: calc(var(--k) * 22);
+  line-height: 0.95;
+  transform: rotate(-4deg);
+}
+
+/* The sample: the face you pull when the chop is that good */
+.stk-chop {
+  gap: calc(var(--k) * 4);
+  width: calc(var(--k) * 204);
+  height: calc(var(--k) * 112);
+  padding-right: calc(var(--k) * 10);
+  border-radius: 27.5% 30.4% 28.4% 31.4% / 48.2% 51.8% 50% 53.6%;
+  background: #ff7a2b;
+  color: #fbf6e9;
+}
+
+.stk-chop::before {
+  inset: calc(var(--k) * 4);
+  border-radius: inherit;
+}
+
+.stk-chop img {
+  width: calc(var(--k) * 100);
+  height: calc(var(--k) * 100);
+  margin: 0 calc(var(--k) * -6) 0 calc(var(--k) * -4);
+}
+
+.stk-chop b {
+  --o: calc(var(--k) * 2);
+  --n: calc(var(--k) * -2);
+  font-family: "Anton", "Bowlby One", sans-serif;
+  font-size: calc(var(--k) * 31);
+  line-height: 0.98;
+  letter-spacing: calc(var(--k) * 1);
+  text-shadow:
+    var(--o) var(--o) 0 #1a1410,
+    var(--n) var(--o) 0 #1a1410,
+    var(--o) var(--n) 0 #1a1410,
+    var(--n) var(--n) 0 #1a1410,
+    0 var(--o) 0 #1a1410,
+    var(--o) 0 0 #1a1410,
+    var(--n) 0 0 #1a1410,
+    0 var(--n) 0 #1a1410,
+    calc(var(--k) * 4) calc(var(--k) * 4) 0 #1a1410;
+  transform: rotate(-5deg) skewX(-8deg);
+}
+
+/* How many people put it on; dark where one of them is the person looking */
+.stk i {
+  position: absolute;
+  top: calc(var(--k) * -12);
+  right: calc(var(--k) * -12);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: calc(var(--k) * 32);
+  height: calc(var(--k) * 32);
+  padding: 0 calc(var(--k) * 8);
+  border-radius: calc(var(--k) * 16);
+  background: #fff;
+  box-shadow: 0 0 0 calc(var(--k) * 2) #1a1208;
+  color: #1a1208;
+  font:
+    700 calc(var(--k) * 15) "JetBrains Mono",
+    monospace;
+  font-style: normal;
+  letter-spacing: 0;
+}
+
+.stk.is-mine i {
+  background: #1a1208;
+  box-shadow: 0 0 0 calc(var(--k) * 2) #fff;
+  color: #fff;
+}
+
+button.stk {
+  cursor: pointer;
+  transition: transform 0.12s ease-out;
+}
+
+button.stk:hover {
+  transform: translateY(calc(var(--k) * -3)) rotate(-1.5deg);
+}
+
+button.stk:active {
+  transform: translateY(0);
+}
+
+button.stk:focus-visible,
+.stk-gone:focus-visible {
+  outline: 2px solid #ffd9a0;
+  outline-offset: 3px;
+}
+
+button.stk:disabled {
+  cursor: default;
+}
+
+/* Where one was peeled from the backing sheet: press it and the sticker comes back off */
+.stk-gone {
+  --k: 1px;
+  flex: none;
+  box-sizing: border-box;
+  width: calc(var(--k) * 204);
+  height: calc(var(--k) * 108);
+  padding: 0;
+  border: calc(var(--k) * 2) dashed #8d8676;
+  border-radius: calc(var(--k) * 9);
+  background: rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.stk-gone.stk-pocket {
+  width: calc(var(--k) * 216);
+  height: calc(var(--k) * 106);
+}
+
+.stk-gone.stk-chop {
+  height: calc(var(--k) * 112);
+  border-radius: 27.5% 30.4% 28.4% 31.4% / 48.2% 51.8% 50% 53.6%;
+}
+
+.stk-gone::before {
+  content: none;
+}
+
+.stk-gone:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button.stk {
+    transition: none;
+  }
+}

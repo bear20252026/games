@@ -1,0 +1,4056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>TITAN 6X6 — AT-08 Expedition Concept | Interactive WebGPU &amp; CAD Experience</title>
+  <meta
+    name="description"
+    content="TITAN 6X6 (AT-08) experimental armored 6×6 expedition concept vehicle. Interactive studio inspection, real-time CAD wireframe & blueprint X-ray engineering modes, and 6-wheel off-road physics powered by Three.js WebGPU & TSL."
+  />
+  <link
+    rel="icon"
+    type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2311161D'/%3E%3Cpath d='M12 24h40v6H35v20h-6V30H12z' fill='%23EEF1F5'/%3E%3Crect x='12' y='14' width='16' height='4' rx='2' fill='%230D8CE0'/%3E%3Crect x='42' y='46' width='10' height='4' rx='2' fill='%23E87812'/%3E%3C/svg%3E"
+  />
+  <script>
+    window.addEventListener('error', (e) => {
+      const st = document.getElementById('loader-status');
+      if (st) st.textContent = 'Runtime error: ' + (e.message || e.filename || 'Script error');
+    });
+    window.addEventListener('unhandledrejection', (e) => {
+      const st = document.getElementById('loader-status');
+      if (st) st.textContent = 'Initialization error: ' + (e.reason?.message || e.reason || 'Unhandled rejection');
+    });
+  </script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.js",
+        "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.js",
+        "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.174.0/examples/jsm/"
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preload" href="./titan_truck.glb" as="fetch" crossorigin="anonymous" />
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.webgpu.js" crossorigin />
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.174.0/build/three.tsl.js" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+    rel="stylesheet"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </noscript>
+  <style>
+    /* ========================================================================
+       TITAN 6X6 — AWWWARDS ARCHITECTURAL MINIMALISM DESIGN SYSTEM
+       Dual-Theme Adaptive Tokens: Alabaster Glass <-> Blueprint CAD X-Ray
+       ======================================================================== */
+    :root {
+      --bg-base: #F6F7F9;
+      --bg-stage: #F6F7F9;
+      --glass-bg: #FFFFFF;
+      --glass-bg-strong: #FFFFFF;
+      --glass-hover: #F8FAFC;
+      --glass-inset: #F1F4F8;
+      --glass-btn: #F7F9FB;
+      --ink: #11161D;
+      --ink-secondary: #535E6E;
+      --ink-muted: #8490A0;
+      --hairline: rgba(17, 22, 29, 0.09);
+      --hairline-strong: rgba(17, 22, 29, 0.18);
+      --pill-active-bg: #161C24;
+      --pill-active-fg: #FFFFFF;
+      --accent-blue: #0D8CE0;
+      --accent-blue-dark: #0A73BA;
+      --accent-blue-soft: #EBF5FD;
+      --accent-blue-border: rgba(13, 140, 224, 0.30);
+      --accent-amber: #E67610;
+      --accent-amber-fg: #9A4A03;
+      --accent-amber-soft: #FDF3E8;
+      --accent-amber-border: rgba(230, 118, 16, 0.32);
+      --danger: #D93829;
+      --kbd-bg: #EEF2F6;
+      --kbd-fg: #5C6776;
+      --toast-bg: #FFFFFF;
+      --toast-fg: #11161D;
+      --modal-backdrop: rgba(17, 22, 29, 0.22);
+      --ann-line: rgba(17, 22, 29, 0.34);
+      --ann-dot-stroke: #FFFFFF;
+      --shadow-glass: 0 4px 20px rgba(17, 22, 29, 0.055), 0 1px 2px rgba(17, 22, 29, 0.035);
+      --shadow-elevated: 0 16px 44px rgba(17, 22, 29, 0.10), 0 2px 6px rgba(17, 22, 29, 0.045);
+      --font-display: 'Syne', 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      --theme-dur: 0.32s;
+    }
+
+    /* Pure Light Architectural X-Ray Vellum Theme (ZERO dark mode, ZERO gradients!) */
+    body[data-theme="blueprint"] {
+      --bg-base: #EFF4FA;
+      --bg-stage: #EFF4FA;
+      --glass-bg: #FFFFFF;
+      --glass-bg-strong: #FFFFFF;
+      --glass-hover: #F5F9FE;
+      --glass-inset: #EAF2FB;
+      --glass-btn: #F3F8FE;
+      --ink: #0C233C;
+      --ink-secondary: #3A5A7C;
+      --ink-muted: #6C8AA8;
+      --hairline: rgba(13, 140, 224, 0.18);
+      --hairline-strong: rgba(13, 140, 224, 0.36);
+      --pill-active-bg: #0D8CE0;
+      --pill-active-fg: #FFFFFF;
+      --accent-blue: #0D8CE0;
+      --accent-blue-dark: #096FB3;
+      --accent-blue-soft: #E3F2FD;
+      --accent-blue-border: rgba(13, 140, 224, 0.36);
+      --accent-amber: #E67610;
+      --accent-amber-fg: #9A4A03;
+      --accent-amber-soft: #FDF3E8;
+      --accent-amber-border: rgba(230, 118, 16, 0.34);
+      --kbd-bg: #E5F0FB;
+      --kbd-fg: #3A5A7C;
+      --toast-bg: #FFFFFF;
+      --toast-fg: #0C233C;
+      --modal-backdrop: rgba(12, 35, 60, 0.22);
+      --ann-line: rgba(13, 140, 224, 0.50);
+      --ann-dot-stroke: #FFFFFF;
+      --shadow-glass: 0 4px 20px rgba(13, 86, 148, 0.08), 0 1px 2px rgba(13, 86, 148, 0.04);
+      --shadow-elevated: 0 16px 44px rgba(13, 86, 148, 0.13), 0 2px 6px rgba(13, 86, 148, 0.05);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg-base);
+      color: var(--ink);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background-color var(--theme-dur) ease, color var(--theme-dur) ease;
+    }
+
+    button, input {
+      font-family: inherit;
+      color: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      background: none;
+      border: none;
+      outline: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid var(--accent-blue);
+      outline-offset: 2px;
+    }
+
+    svg.ico {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      display: block;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ========================================================================
+       FULL-BLEED 3D WEBGPU STAGE
+       ======================================================================== */
+    #stage-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      width: 100vw;
+      height: 100vh;
+      background: var(--bg-stage);
+      overflow: hidden;
+    }
+
+    #stage-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      cursor: grab;
+    }
+
+    #stage-wrap canvas:active {
+      cursor: grabbing;
+    }
+
+    /* ========================================================================
+       SWISS ARCHITECTURAL TOP BAR (MINIMAL, ZERO DUPLICATION)
+       ======================================================================== */
+    .top-bar {
+      position: fixed;
+      top: 24px;
+      left: 34px;
+      right: 34px;
+      min-height: 44px;
+      z-index: 40;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 16px;
+      pointer-events: none;
+    }
+
+    /* Top-Left: Minimalist Editorial Stamp (AT—08) */
+    .brand-lockup {
+      justify-self: start;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 2px;
+      pointer-events: auto;
+      min-width: 0;
+    }
+
+    .brand-home-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 0;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink);
+      white-space: nowrap;
+      transition: opacity 0.2s ease, color var(--theme-dur) ease;
+    }
+
+    .brand-home-btn:hover {
+      opacity: 0.72;
+    }
+
+    .brand-accent-bar {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 0 3px var(--accent-blue-soft);
+      transition: background-color var(--theme-dur) ease;
+    }
+
+    .brand-sep {
+      width: 14px;
+      height: 1px;
+      background: var(--hairline-strong);
+    }
+
+    .brand-meta-inline {
+      font-weight: 500;
+      color: var(--ink-muted);
+      letter-spacing: 0.12em;
+    }
+
+    .brand-sub {
+      display: none;
+    }
+
+    .cad-telemetry {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      padding-left: 18px;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      transition: color var(--theme-dur) ease;
+    }
+
+    .cad-telemetry .cad-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 8px var(--accent-blue);
+      flex-shrink: 0;
+    }
+
+    body[data-app-mode="wireframe"] .cad-telemetry {
+      display: inline-flex;
+    }
+
+    /* Top-Center: Minimalist Numbered Editorial Mode Switcher */
+    .mode-switcher {
+      justify-self: center;
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 4px;
+      border-radius: 999px;
+      background: var(--glass-bg);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 6px 24px rgba(17, 22, 29, 0.06);
+      contain: layout style;
+      transition:
+        background-color var(--theme-dur) ease,
+        border-color var(--theme-dur) ease,
+        box-shadow var(--theme-dur) ease;
+    }
+
+    .mode-pill {
+      height: 34px;
+      padding: 0 15px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      transition:
+        background-color 0.22s var(--ease-out),
+        color 0.22s var(--ease-out),
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        transform 0.14s ease;
+    }
+
+    .mode-pill .mode-idx {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      opacity: 0.48;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+
+    .mode-pill:hover {
+      color: var(--ink);
+      background: var(--glass-inset);
+    }
+
+    .mode-pill:active {
+      transform: scale(0.97);
+    }
+
+    .mode-pill.is-active,
+    .mode-pill.is-active:hover {
+      background: var(--pill-active-bg);
+      color: var(--pill-active-fg);
+      box-shadow: 0 3px 12px rgba(17, 22, 29, 0.14);
+    }
+
+    .mode-pill.is-active .mode-idx {
+      opacity: 0.72;
+    }
+
+    /* Drive Tab with Subtle Electric-Blue Status Dot */
+    .mode-pill--drive {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid transparent;
+      padding: 0 16px;
+    }
+
+    .mode-pill--drive .drive-live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      box-shadow: 0 0 8px rgba(13, 140, 224, 0.55);
+      flex-shrink: 0;
+    }
+
+    .mode-pill--drive:hover {
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue-dark);
+      border-color: var(--accent-blue-border);
+      box-shadow: none;
+    }
+
+    .mode-pill--drive.is-active,
+    .mode-pill--drive.is-active:hover {
+      background: var(--accent-blue);
+      color: #FFFFFF;
+      border-color: var(--accent-blue);
+      box-shadow: 0 6px 18px rgba(13, 140, 224, 0.34);
+    }
+
+    .mode-pill--drive.is-active .drive-live-dot {
+      background: #FFFFFF;
+      box-shadow: none;
+    }
+
+    body[data-theme="blueprint"] .mode-pill--drive:hover,
+    body[data-theme="blueprint"] .mode-pill--drive.is-active {
+      color: #FFFFFF;
+    }
+
+    /* Top-Right: Minimalist Hairline Utilities */
+    .top-utilities {
+      justify-self: end;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .util-btn {
+      position: relative;
+      height: 38px;
+      min-width: 38px;
+      padding: 0 11px;
+      border-radius: 999px;
+      background: var(--glass-bg);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(17, 22, 29, 0.05);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      color: var(--ink-secondary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      transition:
+        background-color 0.22s ease,
+        border-color 0.22s ease,
+        color 0.22s ease,
+        transform 0.15s ease,
+        box-shadow var(--theme-dur) ease;
+    }
+
+    .util-btn--icon {
+      width: 40px;
+      padding: 0;
+    }
+
+    .util-btn:hover {
+      background: var(--glass-hover);
+      border-color: var(--hairline-strong);
+      color: var(--ink);
+    }
+
+    .util-btn:active {
+      transform: scale(0.96);
+    }
+
+    .util-btn.is-muted {
+      color: var(--ink-muted);
+    }
+
+    /* Clean hover tooltip on top utility buttons */
+    .util-btn[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      padding: 5px 9px;
+      border-radius: 7px;
+      background: var(--toast-bg);
+      color: var(--toast-fg);
+      border: 1px solid var(--hairline);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.16s ease, transform 0.16s ease;
+      z-index: 60;
+    }
+
+    .util-btn[data-tooltip]:hover::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .engine-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      flex-shrink: 0;
+    }
+
+    #btn-quality[data-backend="webgl2"] .engine-dot {
+      background: var(--accent-amber);
+    }
+
+    .engine-sep {
+      opacity: 0.35;
+    }
+
+    .audio-utility {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .audio-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      width: 174px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-elevated);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.18s ease, transform 0.18s var(--ease-out), visibility 0.18s ease;
+      z-index: 55;
+    }
+
+    .audio-utility.is-popover-open .audio-popover {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .audio-utility.is-popover-open .util-btn[data-tooltip]::after {
+      opacity: 0;
+    }
+
+    .audio-popover-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-secondary);
+    }
+
+    .audio-popover-val {
+      color: var(--accent-blue);
+      font-variant-numeric: tabular-nums;
+    }
+
+    #ico-sound-off {
+      display: none;
+    }
+
+    #btn-audio.is-muted #ico-sound-on {
+      display: none;
+    }
+
+    #btn-audio.is-muted #ico-sound-off {
+      display: block;
+    }
+
+    /* ========================================================================
+       SINGLE-ROW 48px AWWWARDS FLOATING CONTROL RAIL + SYSTEMS POPOVER
+       ======================================================================== */
+    #bottom-dock {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      z-index: 34;
+      width: max-content;
+      max-width: min(860px, calc(100vw - 320px));
+      padding: 6px 8px;
+      border-radius: 999px;
+      background: var(--glass-bg);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 32px rgba(17, 22, 29, 0.08), 0 1px 2px rgba(17, 22, 29, 0.04);
+      contain: style;
+      transition:
+        background-color var(--theme-dur) ease,
+        border-color var(--theme-dur) ease,
+        box-shadow var(--theme-dur) ease,
+        border-radius 0.25s ease;
+    }
+
+    body[data-app-mode="drive"] #bottom-dock {
+      border-radius: 18px;
+      padding: 9px 13px;
+    }
+
+    .dock-panel {
+      display: none;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+    }
+
+    body[data-app-mode="inspect"] #dock-inspect {
+      display: flex;
+    }
+
+    body[data-app-mode="wireframe"] #dock-wireframe {
+      display: flex;
+    }
+
+    body[data-app-mode="drive"] #dock-drive {
+      display: flex;
+    }
+
+    .dock-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--hairline);
+      transition: background-color var(--theme-dur) ease;
+    }
+
+    .v-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--hairline);
+      flex-shrink: 0;
+      margin: 0 2px;
+      transition: background-color var(--theme-dur) ease;
+    }
+
+    /* --- SINGLE-ROW LAYER TABS --- */
+    .dock-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .layer-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .layer-tab {
+      height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      transition:
+        background-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.14s ease;
+    }
+
+    .layer-tab:hover {
+      background: var(--glass-inset);
+      color: var(--ink);
+    }
+
+    .layer-tab:active {
+      transform: scale(0.97);
+    }
+
+    .layer-tab .tab-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      display: none;
+      flex-shrink: 0;
+    }
+
+    .layer-tab.is-active {
+      background: var(--pill-active-bg);
+      color: var(--pill-active-fg);
+      font-weight: 600;
+    }
+
+    .layer-tab.is-active .tab-dot {
+      display: inline-block;
+    }
+
+    body[data-theme="blueprint"] .layer-tab.is-active .tab-dot {
+      background: #FFFFFF;
+    }
+
+    /* --- PROGRESSIVE-DISCLOSURE SYSTEMS POPOVER TRIGGER & CARD --- */
+    .systems-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .systems-trigger-btn {
+      height: 34px;
+      padding: 0 13px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--glass-inset);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .systems-trigger-btn:hover {
+      background: var(--glass-hover);
+      border-color: var(--hairline-strong);
+    }
+
+    .systems-wrap.is-open .systems-trigger-btn {
+      background: var(--accent-blue-soft);
+      border-color: var(--accent-blue-border);
+      color: var(--accent-blue-dark);
+    }
+
+    .systems-trigger-btn .sys-chev {
+      width: 12px;
+      height: 12px;
+      opacity: 0.6;
+      transition: transform 0.22s var(--ease-out);
+    }
+
+    .systems-wrap.is-open .systems-trigger-btn .sys-chev {
+      transform: rotate(180deg);
+      opacity: 1;
+    }
+
+    .systems-popover {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 14px);
+      width: 318px;
+      padding: 16px;
+      border-radius: 18px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-elevated);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(10px) scale(0.98);
+      transform-origin: bottom right;
+      transition:
+        opacity 0.22s var(--ease-out),
+        transform 0.22s var(--ease-out),
+        visibility 0.22s ease;
+    }
+
+    .systems-wrap.is-open .systems-popover {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .sys-pop-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .sys-explode-box {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 11px 12px;
+      border-radius: 12px;
+      background: var(--glass-inset);
+      border: 1px solid var(--hairline);
+    }
+
+    .sys-explode-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sys-mech-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    .sys-mech-grid .mech-pill {
+      width: 100%;
+      height: 40px;
+      padding: 0 11px;
+      justify-content: space-between;
+      border-radius: 11px;
+    }
+
+    .sys-mech-grid .mech-pill-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    /* Braun / Teenage-Engineering Tactile Hardware Toggle Switch inside Popovers */
+    .systems-popover .mech-pill .status-dot {
+      position: relative;
+      width: 28px;
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(17, 22, 29, 0.14);
+      flex-shrink: 0;
+      transition: background-color 0.2s var(--ease-out);
+    }
+
+    .systems-popover .mech-pill .status-dot::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      box-shadow: 0 1px 3px rgba(17, 22, 29, 0.22);
+      transition: transform 0.2s var(--ease-out);
+    }
+
+    .systems-popover .mech-pill.is-on .status-dot {
+      background: var(--accent-blue);
+    }
+
+    .systems-popover .mech-pill.is-amber.is-on .status-dot {
+      background: var(--accent-amber);
+    }
+
+    .systems-popover .mech-pill.is-on .status-dot::after {
+      transform: translateX(12px);
+    }
+
+    .sys-full-btn {
+      width: 100%;
+      height: 38px;
+      padding: 0 12px;
+      justify-content: space-between;
+      border-radius: 11px;
+    }
+
+    .sys-wire-switches .mech-pill .status-dot {
+      width: 6px;
+      height: 6px;
+    }
+
+    .sys-wire-switches .mech-pill .status-dot::after {
+      display: none;
+    }
+
+    .sys-wire-layers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+    }
+
+    .sys-wire-layers .wire-layer-btn {
+      justify-content: center;
+      height: 30px;
+      border-radius: 8px;
+    }
+
+    .sys-wire-switches {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .sys-wire-switches .mech-pill {
+      width: 100%;
+      height: 34px;
+      justify-content: center;
+      padding: 0 8px;
+    }
+
+    /* --- INSPECT DOCK: Mechanical Controls Row --- */
+    .dock-controls-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .explode-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .explode-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      white-space: nowrap;
+    }
+
+    .explode-readout {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      min-width: 34px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Architectural Range Slider */
+    input[type="range"].arch-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 104px;
+      height: 4px;
+      border-radius: 999px;
+      background: var(--hairline-strong);
+      cursor: pointer;
+      transition: background-color var(--theme-dur) ease;
+    }
+
+    input[type="range"].arch-slider--compact {
+      width: 78px;
+    }
+
+    input[type="range"].arch-slider--full {
+      width: 100%;
+    }
+
+    input[type="range"].arch-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      border: 2px solid var(--glass-bg-strong);
+      box-shadow: 0 1px 6px rgba(17, 22, 29, 0.28);
+      transition: transform 0.14s ease, background-color var(--theme-dur) ease;
+    }
+
+    input[type="range"].arch-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.18);
+    }
+
+    input[type="range"].arch-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      border: 2px solid var(--glass-bg-strong);
+      box-shadow: 0 1px 6px rgba(17, 22, 29, 0.28);
+    }
+
+    .mech-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mech-pill {
+      height: 32px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid var(--hairline);
+      background: var(--glass-btn);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      transition:
+        background-color 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.14s ease;
+    }
+
+    .mech-pill:hover {
+      background: var(--glass-hover);
+      border-color: var(--hairline-strong);
+      color: var(--ink);
+    }
+
+    .mech-pill:active {
+      transform: scale(0.96);
+    }
+
+    .mech-pill .status-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--hairline-strong);
+      flex-shrink: 0;
+      transition: background-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .mech-pill.is-on {
+      background: var(--accent-blue-soft);
+      border-color: var(--accent-blue-border);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .mech-pill.is-on .ico {
+      color: var(--accent-blue);
+    }
+
+    .mech-pill.is-on .status-dot {
+      background: var(--accent-blue);
+      box-shadow: 0 0 6px var(--accent-blue);
+    }
+
+    .mech-pill.is-amber.is-on {
+      background: var(--accent-amber-soft);
+      border-color: var(--accent-amber-border);
+    }
+
+    .mech-pill.is-amber.is-on .ico {
+      color: var(--accent-amber);
+    }
+
+    .mech-pill.is-amber.is-on .status-dot {
+      background: var(--accent-amber);
+      box-shadow: 0 0 6px var(--accent-amber);
+    }
+
+    @keyframes winchLedPulse {
+      0%, 100% {
+        box-shadow: 0 0 5px var(--accent-amber);
+        opacity: 1;
+      }
+      50% {
+        box-shadow: 0 0 11px var(--accent-amber);
+        opacity: 0.62;
+      }
+    }
+
+    .mech-pill.is-amber.is-winch-pulling {
+      background: var(--accent-amber-soft);
+      border-color: var(--accent-amber);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 0 14px rgba(232, 120, 18, 0.22);
+    }
+
+    .mech-pill.is-amber.is-winch-pulling .ico {
+      color: var(--accent-amber);
+    }
+
+    .mech-pill.is-amber.is-winch-pulling .status-dot {
+      background: var(--accent-amber);
+      animation: winchLedPulse 1.05s ease-in-out infinite;
+    }
+
+    .pill-key {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 2px 4.5px;
+      border-radius: 4px;
+      background: var(--kbd-bg);
+      color: var(--kbd-fg);
+      transition: background-color var(--theme-dur) ease, color var(--theme-dur) ease;
+    }
+
+    /* --- WIREFRAME DOCK --- */
+    .wire-styles-strip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .wire-style-btn {
+      height: 33px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.14s ease;
+    }
+
+    .wire-style-btn .lbl-short {
+      display: none;
+    }
+
+    .wire-style-btn:hover {
+      background: var(--glass-inset);
+      color: var(--ink);
+    }
+
+    .wire-style-btn:active {
+      transform: scale(0.97);
+    }
+
+    .wire-style-btn.is-active {
+      background: var(--pill-active-bg);
+      color: var(--pill-active-fg);
+      box-shadow: 0 3px 12px rgba(17, 22, 29, 0.16);
+    }
+
+    .wire-layer-strip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .wire-layer-btn {
+      height: 28px;
+      padding: 0 9px;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      transition: background-color 0.16s ease, color 0.16s ease;
+    }
+
+    .wire-layer-btn:hover {
+      background: var(--glass-inset);
+      color: var(--ink);
+    }
+
+    .wire-layer-btn.is-active {
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .mech-pill--compact {
+      height: 28px;
+      padding: 0 9px;
+      font-size: 11.5px;
+      border-radius: 8px;
+    }
+
+    /* Mobile drawer toggle inside dock (hidden on desktop) */
+    .mobile-controls-toggle {
+      display: none;
+      height: 31px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid var(--hairline);
+      background: var(--glass-btn);
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .mobile-controls-toggle.is-open {
+      background: var(--accent-blue-soft);
+      border-color: var(--accent-blue-border);
+      color: var(--accent-blue);
+    }
+
+    /* --- DRIVE DOCK (Minimal Automotive Telemetry Cluster) --- */
+    .drive-cluster-row {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      padding: 2px 4px;
+    }
+
+    .drive-speed-zone {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .drive-speed-readout {
+      display: flex;
+      align-items: baseline;
+      gap: 5px;
+      min-width: 82px;
+    }
+
+    #hud-speed {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 36px;
+      line-height: 0.92;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .drive-unit {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--ink-muted);
+    }
+
+    .drive-gear-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 106px;
+      padding-left: 12px;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .drive-gear-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    #hud-gear {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent-blue);
+    }
+
+    #hud-surface {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .drive-rpm-track {
+      width: 100%;
+      height: 3.5px;
+      border-radius: 999px;
+      background: var(--hairline);
+      overflow: hidden;
+    }
+
+    #hud-rpm-fill {
+      height: 100%;
+      width: 14%;
+      border-radius: 999px;
+      background: var(--accent-blue);
+      transition: width 0.06s linear;
+    }
+
+    .drive-lamps {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .drive-lamp {
+      color: var(--ink-muted);
+      transition: color 0.12s ease;
+    }
+
+    .drive-lamp.is-lit-red {
+      color: var(--danger);
+    }
+
+    .drive-lamp.is-lit-amber {
+      color: var(--accent-amber);
+    }
+
+    .drive-lamp.is-lit-blue {
+      color: var(--accent-blue);
+    }
+
+    /* 6-Wheel Live Suspension Travel Bars */
+    .drive-susp-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 0 12px;
+      border-left: 1px solid var(--hairline);
+      border-right: 1px solid var(--hairline);
+    }
+
+    .drive-susp-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+    }
+
+    .susp-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .susp-track {
+      width: 8px;
+      height: 32px;
+      border-radius: 4px;
+      background: var(--glass-inset);
+      border: 1px solid var(--hairline);
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+
+    .susp-fill {
+      width: 100%;
+      height: 45%;
+      border-radius: 2px;
+      background: var(--accent-blue);
+      transition: background-color 0.1s ease;
+    }
+
+    .susp-fill.is-heavy {
+      background: var(--accent-amber);
+    }
+
+    .susp-tag {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 600;
+      color: var(--ink-secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 2.5px;
+    }
+
+    .susp-dot {
+      width: 3.5px;
+      height: 3.5px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+    }
+
+    .susp-col.is-airborne .susp-dot {
+      background: var(--hairline-strong);
+    }
+
+    .drive-actions-zone {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* Drive Hint Pill (auto-fades after 4.5s — crisp high-contrast dark frosted glass against bright sky) */
+    #drive-hint-pill {
+      position: fixed;
+      top: 78px;
+      left: 50%;
+      transform: translate(-50%, -8px);
+      z-index: 35;
+      padding: 7px 15px;
+      border-radius: 999px;
+      background: rgba(17, 22, 29, 0.80);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 10px 28px rgba(17, 22, 29, 0.22);
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(240, 245, 250, 0.92);
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      cursor: pointer;
+      transition: opacity 0.35s ease, transform 0.35s var(--ease-out), visibility 0.35s ease;
+    }
+
+    #drive-hint-pill.is-visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translate(-50%, 0);
+    }
+
+    #drive-hint-pill kbd {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      color: #FFFFFF;
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      padding: 1.5px 5.5px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+
+    /* ========================================================================
+       BOTTOM-RIGHT FLOATING CAMERA PICKER + UPWARD POPOVER
+       ======================================================================== */
+    #camera-picker {
+      position: fixed;
+      right: 34px;
+      bottom: 24px;
+      z-index: 36;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    #btn-camera-picker {
+      height: 48px;
+      padding: 0 15px;
+      border-radius: 999px;
+      background: var(--glass-bg);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 32px rgba(17, 22, 29, 0.08), 0 1px 2px rgba(17, 22, 29, 0.04);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color var(--theme-dur) ease,
+        transform 0.14s ease,
+        box-shadow var(--theme-dur) ease;
+    }
+
+    #btn-camera-picker:hover {
+      background: var(--glass-hover);
+      border-color: var(--hairline-strong);
+    }
+
+    #btn-camera-picker:active {
+      transform: scale(0.97);
+    }
+
+    #btn-camera-picker .cam-chevron {
+      width: 13px;
+      height: 13px;
+      color: var(--ink-muted);
+      transition: transform 0.22s var(--ease-out);
+    }
+
+    #camera-picker.is-open #btn-camera-picker {
+      border-color: var(--accent-blue-border);
+    }
+
+    #camera-picker.is-open #btn-camera-picker .cam-chevron {
+      transform: rotate(180deg);
+      color: var(--accent-blue);
+    }
+
+    #camera-popover {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 10px);
+      width: 224px;
+      padding: 8px;
+      border-radius: 14px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(22px) saturate(1.3);
+      -webkit-backdrop-filter: blur(22px) saturate(1.3);
+      box-shadow: var(--shadow-elevated);
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(8px) scale(0.98);
+      transform-origin: bottom right;
+      transition:
+        opacity 0.2s ease,
+        transform 0.22s var(--ease-out),
+        visibility 0.2s ease,
+        background-color var(--theme-dur) ease,
+        border-color var(--theme-dur) ease;
+    }
+
+    #camera-picker.is-open #camera-popover {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .cam-popover-head {
+      padding: 4px 8px 6px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cam-popover-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cam-option-btn {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink-secondary);
+      text-align: left;
+      transition: background-color 0.16s ease, color 0.16s ease;
+    }
+
+    .cam-option-btn:hover {
+      background: var(--glass-inset);
+      color: var(--ink);
+    }
+
+    .cam-option-btn .cam-opt-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: transparent;
+      flex-shrink: 0;
+    }
+
+    .cam-option-btn.is-active {
+      background: var(--accent-blue-soft);
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .cam-option-btn.is-active .cam-opt-dot {
+      background: var(--accent-blue);
+      box-shadow: 0 0 6px var(--accent-blue);
+    }
+
+    .cam-popover-footer {
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    body[data-app-mode="drive"] .cam-popover-footer {
+      display: none;
+    }
+
+    .cam-reset-btn {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      background: var(--accent-blue-soft);
+      transition: background-color 0.16s ease, color 0.16s ease;
+    }
+
+    .cam-reset-btn:hover {
+      background: var(--accent-blue);
+      color: #FFFFFF;
+    }
+
+    body[data-theme="blueprint"] .cam-reset-btn:hover {
+      color: #061322;
+    }
+
+    /* ========================================================================
+       8 TECHNICAL ANNOTATIONS (SVG HAIRLINES + CRISP PINS + DETAIL DRAWER)
+       ======================================================================== */
+    #annotations-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.28s ease, visibility 0.28s ease;
+    }
+
+    #annotations-layer.is-visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #annotations-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .ann-line {
+      stroke: var(--ann-line);
+      stroke-width: 1;
+      fill: none;
+    }
+
+    .ann-line.is-selected {
+      stroke: var(--accent-blue);
+      stroke-width: 1.5;
+    }
+
+    .ann-anchor-dot {
+      fill: var(--ink);
+      stroke: var(--ann-dot-stroke);
+      stroke-width: 1.5;
+    }
+
+    .ann-anchor-dot.is-selected {
+      fill: var(--accent-blue);
+    }
+
+    .ann-pin {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4.5px 10px 4.5px 7px;
+      border-radius: 999px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--hairline-strong);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.07em;
+      color: var(--ink);
+      white-space: nowrap;
+      box-shadow: 0 4px 14px rgba(17, 22, 29, 0.09);
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .ann-pin .pin-code {
+      font-weight: 600;
+      color: var(--accent-blue);
+    }
+
+    .ann-pin:hover {
+      background: var(--glass-hover);
+      border-color: var(--accent-blue);
+    }
+
+    .ann-pin.is-selected {
+      background: var(--pill-active-bg);
+      border-color: var(--pill-active-bg);
+      color: var(--pill-active-fg);
+    }
+
+    .ann-pin.is-selected .pin-code {
+      color: var(--accent-blue);
+    }
+
+    body[data-theme="blueprint"] .ann-pin.is-selected .pin-code {
+      color: #061322;
+    }
+
+    /* Compact Annotation Detail Drawer (Upper-Right Margin, 100% clear of dock & camera picker) */
+    #annotation-drawer {
+      position: fixed;
+      right: 24px;
+      top: 84px;
+      width: 296px;
+      padding: 18px 18px 16px;
+      border-radius: 16px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--hairline);
+      backdrop-filter: blur(22px) saturate(1.25);
+      -webkit-backdrop-filter: blur(22px) saturate(1.25);
+      box-shadow: var(--shadow-elevated);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateX(16px);
+      visibility: hidden;
+      transition:
+        opacity 0.26s ease,
+        transform 0.28s var(--ease-out),
+        visibility 0.26s ease,
+        background-color var(--theme-dur) ease,
+        border-color var(--theme-dur) ease;
+      z-index: 32;
+    }
+
+    #annotation-drawer.is-open {
+      pointer-events: auto;
+      opacity: 1;
+      transform: translateX(0);
+      visibility: visible;
+    }
+
+    .drawer-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .drawer-code {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--accent-blue);
+      margin-bottom: 3px;
+    }
+
+    .drawer-title {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 17px;
+      line-height: 1.15;
+      color: var(--ink);
+    }
+
+    .drawer-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid var(--hairline);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--ink-secondary);
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      transition: background-color 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+    }
+
+    .drawer-close:hover {
+      background: var(--glass-inset);
+      border-color: var(--hairline-strong);
+      color: var(--ink);
+    }
+
+    .drawer-provenance {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: var(--accent-amber-soft);
+      color: var(--accent-amber-fg);
+      border: 1px solid var(--accent-amber-border);
+    }
+
+    .drawer-provenance[data-kind="exterior"] {
+      background: var(--accent-blue-soft);
+      color: var(--accent-blue-dark);
+      border-color: var(--accent-blue-border);
+    }
+
+    .drawer-summary {
+      font-size: 12.5px;
+      line-height: 1.56;
+      color: var(--ink-secondary);
+      margin-bottom: 12px;
+    }
+
+    .drawer-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding-top: 10px;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .spec-chip {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3.5px 7px;
+      border-radius: 6px;
+      border: 1px solid var(--hairline);
+      background: var(--glass-inset);
+      color: var(--ink);
+    }
+
+    /* ========================================================================
+       MOBILE TOUCH DRIVE PAD (DRIVE MODE ON TOUCH / NARROW SCREENS)
+       ======================================================================== */
+    #touch-drive-pad {
+      display: none;
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: 84px;
+      z-index: 33;
+      justify-content: space-between;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+
+    .touch-cluster {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .touch-btn {
+      width: 54px;
+      height: 50px;
+      border-radius: 12px;
+      border: 1px solid var(--hairline-strong);
+      background: var(--glass-bg-strong);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-glass);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink);
+      touch-action: none;
+    }
+
+    .touch-btn.is-pressed {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #FFFFFF;
+    }
+
+    /* ========================================================================
+       CENTERED SHORTCUTS & PAUSE MODAL (? / ESC)
+       ======================================================================== */
+    #shortcuts-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      background: var(--modal-backdrop);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.24s ease, visibility 0.24s ease;
+    }
+
+    #shortcuts-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .shortcuts-card {
+      width: 100%;
+      max-width: 472px;
+      padding: 24px;
+      border-radius: 18px;
+      background: var(--glass-bg-strong);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow-elevated);
+      transform: translateY(10px) scale(0.98);
+      transition: transform 0.26s var(--ease-out);
+    }
+
+    #shortcuts-overlay.is-open .shortcuts-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .modal-kicker {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin-bottom: 4px;
+    }
+
+    .modal-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .modal-btn {
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 10px;
+      border: 1px solid var(--hairline-strong);
+      background: var(--glass-btn);
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+
+    .modal-btn:hover {
+      background: var(--glass-hover);
+      border-color: var(--ink);
+    }
+
+    .modal-btn--primary {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #FFFFFF;
+    }
+
+    .modal-btn--primary:hover {
+      background: var(--accent-blue-dark);
+      border-color: var(--accent-blue-dark);
+      color: #FFFFFF;
+    }
+
+    body[data-theme="blueprint"] .modal-btn--primary {
+      color: #061322;
+    }
+
+    .modal-volume-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 0;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      margin-bottom: 16px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--ink-secondary);
+    }
+
+    .modal-volume-row .vol-val {
+      color: var(--accent-blue);
+      min-width: 36px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .shortcuts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px 16px;
+      font-size: 12px;
+      color: var(--ink-secondary);
+    }
+
+    .shortcut-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .shortcut-item kbd {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--ink);
+      background: var(--kbd-bg);
+      border: 1px solid var(--hairline);
+      padding: 2px 6px;
+      border-radius: 5px;
+      white-space: nowrap;
+    }
+
+    /* ========================================================================
+       SUBTLE MICRO STATUS TOAST
+       ======================================================================== */
+    #status-toast {
+      position: fixed;
+      left: 50%;
+      top: 78px;
+      transform: translate(-50%, -8px);
+      z-index: 50;
+      padding: 6.5px 14px;
+      border-radius: 999px;
+      background: var(--toast-bg);
+      color: var(--toast-fg);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow-glass);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s ease, transform 0.22s var(--ease-out);
+    }
+
+    #status-toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    body[data-app-mode="drive"].has-drive-hint #status-toast {
+      top: 118px;
+    }
+
+    /* ========================================================================
+       ARCHITECTURAL LOADING VEIL
+       ======================================================================== */
+    #loader-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: #F6F7F9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      transition: opacity 0.28s var(--ease-out), visibility 0.28s ease;
+    }
+
+    #loader-overlay.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-inner {
+      width: min(380px, 100%);
+    }
+
+    .loader-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: #0D8CE0;
+      margin-bottom: 10px;
+    }
+
+    .loader-title {
+      font-family: var(--font-display);
+      font-size: 36px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #11161D;
+      margin-bottom: 22px;
+    }
+
+    .loader-bar-track {
+      width: 100%;
+      height: 2.5px;
+      border-radius: 999px;
+      background: rgba(17, 22, 29, 0.16);
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    #loader-bar {
+      width: 8%;
+      height: 100%;
+      border-radius: 999px;
+      background: #0D8CE0;
+      transition: width 0.24s ease;
+    }
+
+    .loader-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      color: rgba(17, 22, 29, 0.62);
+    }
+
+    /* ========================================================================
+       COMPACT LAPTOP (<= 1320px) & TABLET (<= 960px) REFINEMENTS
+       ======================================================================== */
+    @media (max-width: 1320px) {
+      #bottom-dock {
+        max-width: calc(100vw - 340px);
+        padding: 8px 11px;
+      }
+
+      .layer-tab {
+        padding: 0 9px;
+        font-size: 12px;
+      }
+
+      .wire-layer-btn {
+        padding: 0 7.5px;
+        font-size: 11px;
+      }
+
+      .mech-pill {
+        padding: 0 8.5px;
+        font-size: 11.5px;
+      }
+
+      .mech-pill--compact {
+        padding: 0 7.5px;
+        font-size: 11px;
+      }
+
+      .pill-key {
+        display: none;
+      }
+
+      input[type="range"].arch-slider {
+        width: 86px;
+      }
+
+      input[type="range"].arch-slider--compact {
+        width: 68px;
+      }
+
+      .drive-cluster-row {
+        gap: 10px;
+      }
+
+      .drive-susp-zone {
+        padding: 0 9px;
+      }
+
+      .drive-susp-bars {
+        gap: 6px;
+      }
+
+      .drive-actions-zone {
+        gap: 4.5px;
+      }
+
+      .drive-actions-zone .mech-pill {
+        padding: 0 7.5px;
+        font-size: 11.5px;
+        gap: 4.5px;
+      }
+    }
+
+    @media (max-width: 1120px) {
+      .top-bar {
+        top: 14px;
+        left: 16px;
+        right: 16px;
+        gap: 10px;
+      }
+
+      .brand-home-btn {
+        font-size: 14.5px;
+        letter-spacing: 0.08em;
+      }
+
+      .brand-sub {
+        display: none;
+      }
+
+      .cad-telemetry {
+        font-size: 8.5px;
+        letter-spacing: 0.04em;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .mode-pill {
+        padding: 0 12px;
+        font-size: 12.5px;
+        gap: 5px;
+      }
+
+      .mode-pill--drive {
+        padding: 0 13px;
+      }
+
+      #bottom-dock {
+        bottom: 14px;
+        left: 16px;
+        transform: none;
+        max-width: calc(100vw - 196px);
+        width: auto;
+      }
+
+      #camera-picker {
+        right: 16px;
+        bottom: 14px;
+      }
+
+      .drive-cluster-row {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 8px;
+      }
+
+      #hud-speed {
+        font-size: 28px;
+      }
+
+      .drive-speed-readout {
+        min-width: 66px;
+      }
+
+      .drive-gear-meta {
+        min-width: 86px;
+        padding-left: 9px;
+      }
+
+      .drive-susp-zone {
+        display: none;
+      }
+
+      .dock-controls-row {
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+
+      .v-sep {
+        display: none;
+      }
+    }
+
+    /* ========================================================================
+       MOBILE EXCELLENCE (<= 700px — e.g. 390×844)
+       Zero horizontal overflow, airy 3D stage, collapsible controls drawer!
+       ======================================================================== */
+    @media (max-width: 700px) {
+      .top-bar {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        row-gap: 8px;
+        column-gap: 8px;
+      }
+
+      .brand-lockup {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .brand-home-btn {
+        font-size: 15px;
+        letter-spacing: 0.1em;
+      }
+
+      .cad-telemetry {
+        font-size: 8.5px;
+        letter-spacing: 0.05em;
+        padding-left: 11px;
+      }
+
+      .top-utilities {
+        grid-column: 2;
+        grid-row: 1;
+        gap: 6px;
+      }
+
+      #btn-quality {
+        display: none;
+      }
+
+      .util-btn,
+      .util-btn--icon {
+        height: 36px;
+        width: 36px;
+        min-width: 36px;
+        border-radius: 10px;
+      }
+
+      .util-btn[data-tooltip]::after {
+        display: none;
+      }
+
+      .mode-switcher {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: center;
+        width: 100%;
+        max-width: 366px;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        padding: 3px;
+      }
+
+      .mode-pill {
+        height: 34px;
+        padding: 0 8px;
+        font-size: 12px;
+        gap: 5px;
+      }
+
+      .mode-pill--drive {
+        padding: 0 8px;
+      }
+
+      /* Mobile Bottom Dock: full width with sleek horizontal pill strip + collapsible Controls */
+      #bottom-dock {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        transform: none;
+        width: auto;
+        max-width: none;
+        padding: 8px 10px;
+        border-radius: 16px;
+      }
+
+      .dock-top-row {
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      .layer-strip {
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .layer-strip::-webkit-scrollbar {
+        display: none;
+      }
+
+      .wire-styles-strip {
+        flex: 1;
+        min-width: 0;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+      }
+
+      .wire-style-btn {
+        height: 31px;
+        padding: 0 6px;
+        font-size: 11px;
+        justify-content: center;
+        gap: 4px;
+      }
+
+      .wire-style-btn .ico {
+        display: none;
+      }
+
+      .wire-style-btn .lbl-full {
+        display: none;
+      }
+
+      .wire-style-btn .lbl-short {
+        display: inline;
+      }
+
+      .cad-telemetry {
+        max-width: calc(100vw - 116px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      body.is-mobile-dock-open #camera-picker {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(8px);
+      }
+
+      .mobile-controls-toggle {
+        display: inline-flex;
+      }
+
+      .dock-panel .dock-divider,
+      .dock-panel .dock-controls-row {
+        display: none;
+      }
+
+      .dock-panel.is-mobile-expanded .dock-divider {
+        display: block;
+      }
+
+      .dock-panel.is-mobile-expanded .dock-controls-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .explode-group {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      input[type="range"].arch-slider,
+      input[type="range"].arch-slider--compact {
+        flex: 1;
+        width: auto;
+      }
+
+      .mech-group {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .mech-pill {
+        flex: 1 1 calc(33% - 6px);
+        justify-content: center;
+        padding: 0 8px;
+      }
+
+      .wire-layer-strip {
+        width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+        justify-content: flex-start;
+      }
+
+      .wire-layer-strip::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Mobile Drive Dock */
+      .drive-cluster-row {
+        width: 100%;
+        justify-content: space-between;
+        gap: 6px;
+        padding: 0;
+      }
+
+      .drive-speed-zone {
+        gap: 7px;
+      }
+
+      .drive-speed-readout {
+        min-width: 58px;
+      }
+
+      #hud-speed {
+        font-size: 26px;
+      }
+
+      .drive-gear-meta {
+        min-width: 74px;
+        padding-left: 7px;
+      }
+
+      .drive-lamps {
+        gap: 6px;
+        font-size: 8.5px;
+      }
+
+      .drive-actions-zone {
+        gap: 4px;
+      }
+
+      .drive-actions-zone .mech-pill span.btn-lbl {
+        display: none;
+      }
+
+      .drive-actions-zone .mech-pill {
+        flex: 0 0 auto;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        justify-content: center;
+      }
+
+      .drive-actions-zone .mech-pill .status-dot {
+        display: none;
+      }
+
+      /* Mobile Camera Picker — cleanly clear of dock & touch drive pad */
+      #camera-picker {
+        right: 12px;
+        bottom: 70px;
+      }
+
+      body[data-app-mode="drive"] #camera-picker {
+        bottom: auto;
+        top: 102px;
+      }
+
+      body[data-app-mode="drive"] #camera-popover {
+        bottom: auto;
+        top: calc(100% + 8px);
+        transform-origin: top right;
+      }
+
+      #btn-camera-picker {
+        height: 36px;
+        padding: 0 11px;
+        border-radius: 11px;
+        font-size: 11.5px;
+      }
+
+      #annotation-drawer {
+        left: 12px;
+        right: 12px;
+        top: 104px;
+        width: auto;
+        padding: 14px;
+      }
+
+      #drive-hint-pill {
+        display: none !important;
+      }
+
+      #status-toast {
+        top: 104px;
+        font-size: 9.5px;
+        padding: 5.5px 12px;
+        white-space: nowrap;
+        max-width: calc(100vw - 24px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      body[data-app-mode="drive"] #status-toast {
+        top: 148px;
+      }
+
+      body[data-app-mode="drive"] #touch-drive-pad {
+        display: flex;
+      }
+
+      .shortcuts-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ========================================================================
+       SINGLE AWWWARDS SWISS-AUTOMOTIVE EDITORIAL HERO SECTION
+       Asymmetric upper-left monumental display headline + upper-right precision
+       specs + bottom-left quiet orbit cue framing the centered 3D TITAN 6X6.
+       ======================================================================== */
+    @keyframes heroFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    #hero-section {
+      position: fixed;
+      inset: 0;
+      z-index: 12;
+      pointer-events: none;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out);
+    }
+
+    body:not([data-app-mode="inspect"]) #hero-section,
+    body:not([data-inspect-layer="exterior"]) #hero-section,
+    body:has(#annotations-layer.is-visible) #hero-section {
+      opacity: 0;
+      transform: translateY(6px);
+      pointer-events: none;
+    }
+
+    body:not([data-app-mode="inspect"]) #hero-section *,
+    body:not([data-inspect-layer="exterior"]) #hero-section *,
+    body:has(#annotations-layer.is-visible) #hero-section * {
+      pointer-events: none !important;
+    }
+
+    /* Ultra-fine Swiss gallery perimeter border & corner registration marks */
+    .hero-frame-corners {
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(17, 22, 29, 0.06);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .hero-corner {
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      border-color: rgba(17, 22, 29, 0.24);
+      border-style: solid;
+    }
+
+    .hero-corner--tl { top: -1px; left: -1px; border-width: 1.5px 0 0 1.5px; }
+    .hero-corner--tr { top: -1px; right: -1px; border-width: 1.5px 1.5px 0 0; }
+    .hero-corner--bl { bottom: -1px; left: -1px; border-width: 0 0 1.5px 1.5px; }
+    .hero-corner--br { bottom: -1px; right: -1px; border-width: 0 1.5px 1.5px 0; }
+
+    /* Upper-Left Asymmetric Monumental Editorial Hero Block */
+    .hero-editorial-left {
+      position: absolute;
+      top: 96px;
+      left: 36px;
+      width: 278px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      animation: heroFadeUp 0.72s var(--ease-out) both;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+    }
+
+    .hero-kicker-rule {
+      width: 18px;
+      height: 1.5px;
+      background: var(--accent-blue);
+    }
+
+    .hero-display-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(42px, 4.5vw, 66px);
+      line-height: 0.90;
+      letter-spacing: -0.025em;
+      color: #11161D;
+      margin-bottom: 14px;
+    }
+
+    .hero-display-title .hero-x {
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .hero-tagline {
+      font-family: var(--font-body);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: #11161D;
+      margin-bottom: 8px;
+    }
+
+    .hero-copy {
+      font-family: var(--font-body);
+      font-size: 12.5px;
+      line-height: 1.56;
+      color: rgba(17, 22, 29, 0.56);
+      max-width: 268px;
+      margin-bottom: 22px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    /* Crisp Flat Electric-Blue Primary CTA with White Circular Arrow Badge */
+    .hero-cta-primary {
+      height: 44px;
+      padding: 0 6px 0 20px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--accent-blue);
+      color: #FFFFFF;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      box-shadow: 0 8px 24px rgba(13, 140, 224, 0.24);
+      transition: transform 0.22s var(--ease-out), box-shadow 0.22s ease, background-color 0.22s ease;
+    }
+
+    .hero-cta-primary .cta-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      color: var(--accent-blue);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      transition: transform 0.24s var(--ease-out), color 0.2s ease;
+    }
+
+    .hero-cta-primary:hover {
+      background: var(--accent-blue-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(13, 140, 224, 0.32);
+    }
+
+    .hero-cta-primary:hover .cta-badge {
+      transform: translateX(2px);
+      color: var(--accent-blue-dark);
+    }
+
+    .hero-cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(17, 22, 29, 0.68);
+      border-bottom: 1px solid rgba(17, 22, 29, 0.24);
+      transition: color 0.18s ease, border-color 0.18s ease;
+    }
+
+    .hero-cta-secondary:hover {
+      color: var(--accent-blue);
+      border-color: var(--accent-blue);
+    }
+
+    /* Upper-Right Precision Telemetry Index (Pure Hairline Typography) */
+    .hero-right-specs {
+      position: absolute;
+      top: 100px;
+      right: 36px;
+      width: 192px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      pointer-events: none;
+      animation: heroFadeUp 0.8s var(--ease-out) 0.08s both;
+    }
+
+    .hero-spec-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(17, 22, 29, 0.09);
+      text-align: right;
+    }
+
+    .hero-spec-item:last-child {
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .hero-spec-k {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(17, 22, 29, 0.42);
+    }
+
+    .hero-spec-v {
+      font-family: var(--font-body);
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: #11161D;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hero-spec-v em {
+      font-style: normal;
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 600;
+      color: var(--accent-amber-fg);
+      margin-left: 5px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: var(--accent-amber-soft);
+      vertical-align: middle;
+    }
+
+    /* Bottom-Left Quiet Swiss Interaction Cue (Aligned to exact 48px bottom baseline!) */
+    .hero-orbit-cue {
+      position: absolute;
+      left: 34px;
+      bottom: 24px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: rgba(17, 22, 29, 0.44);
+      pointer-events: none;
+    }
+
+    .hero-orbit-cue .cue-ring {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(17, 22, 29, 0.22);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      color: var(--accent-blue);
+    }
+
+    /* ========================================================================
+       ALL-DEVICE RESPONSIVE CHOREOGRAPHY
+       1. Compact Laptop / Tablet Landscape (960px – 1279px)
+       2. Tablet Portrait (701px – 959px)
+       3. Mobile Portrait (<= 700px) & Compact Mobile (<= 380px)
+       4. Short Landscape Mobile (max-height: 500px)
+       ======================================================================== */
+
+    /* 1. Compact Laptop & Tablet Landscape (960px – 1279px) */
+    @media (max-width: 1279px) {
+      .top-bar {
+        top: 18px;
+        left: 22px;
+        right: 22px;
+        gap: 12px;
+      }
+
+      .hero-frame-corners {
+        inset: 10px;
+      }
+
+      .hero-editorial-left {
+        top: 84px;
+        left: 24px;
+        width: 242px;
+      }
+
+      .hero-display-title {
+        font-size: clamp(36px, 3.8vw, 48px);
+        margin-bottom: 10px;
+      }
+
+      .hero-tagline {
+        font-size: 13.5px;
+        margin-bottom: 14px;
+      }
+
+      .hero-copy,
+      .hero-orbit-cue {
+        display: none;
+      }
+
+      .hero-right-specs {
+        top: 86px;
+        right: 24px;
+        width: 168px;
+        gap: 9px;
+      }
+
+      .hero-spec-item:nth-child(4) {
+        display: none;
+      }
+
+      .hero-spec-v {
+        font-size: 12.5px;
+      }
+
+      #bottom-dock {
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: calc(100vw - 260px);
+        padding: 5px 6px;
+      }
+
+      .layer-tab {
+        height: 32px;
+        padding: 0 9px;
+        font-size: 12px;
+      }
+
+      .systems-trigger-btn {
+        height: 32px;
+        padding: 0 11px;
+        font-size: 12px;
+      }
+
+      #camera-picker {
+        right: 22px;
+        bottom: 18px;
+      }
+
+      #btn-camera-picker {
+        height: 44px;
+        padding: 0 13px;
+        font-size: 12px;
+      }
+    }
+
+    /* 2. Tablet Portrait (701px – 959px, e.g. iPad 768×1024) */
+    @media (max-width: 959px) {
+      .brand-meta-inline,
+      .brand-sep {
+        display: none;
+      }
+
+      .hero-right-specs {
+        display: none;
+      }
+
+      /* Centered Editorial Hero cleanly above the centered truck */
+      .hero-editorial-left {
+        top: 84px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: min(520px, calc(100vw - 40px));
+        align-items: center;
+        text-align: center;
+        animation: none;
+      }
+
+      .hero-kicker {
+        margin-bottom: 8px;
+      }
+
+      .hero-display-title {
+        font-size: 40px;
+        line-height: 0.96;
+        margin-bottom: 8px;
+      }
+
+      .hero-display-title br {
+        display: none;
+      }
+
+      .hero-display-title .hero-x {
+        margin: 0 1px;
+      }
+
+      .hero-tagline {
+        font-size: 13.5px;
+        margin-bottom: 14px;
+      }
+
+      .hero-cta-row {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+      }
+
+      .hero-cta-primary {
+        height: 38px;
+        padding: 0 5px 0 16px;
+        font-size: 12.5px;
+        gap: 9px;
+      }
+
+      .hero-cta-primary .cta-badge {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+      }
+
+      /* Bottom dock spans neatly beside Camera button with horizontal swipeable tabs */
+      #bottom-dock {
+        left: 16px;
+        right: 154px;
+        bottom: 16px;
+        transform: none;
+        width: auto;
+        max-width: none;
+        padding: 5px 6px;
+        border-radius: 999px;
+      }
+
+      .dock-panel {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .dock-top-row {
+        flex: 1;
+        min-width: 0;
+        justify-content: flex-start;
+      }
+
+      .layer-strip {
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+      }
+
+      .layer-strip::-webkit-scrollbar {
+        display: none;
+      }
+
+      .v-sep {
+        display: block;
+      }
+
+      #camera-picker {
+        right: 16px;
+        bottom: 16px;
+      }
+
+      #btn-camera-picker {
+        height: 44px;
+        padding: 0 12px;
+      }
+    }
+
+    /* 3. Mobile Portrait (<= 700px, e.g. 390×844 & 360×740) */
+    @media (max-width: 700px) {
+      .hero-frame-corners {
+        display: none;
+      }
+
+      .top-bar {
+        top: max(10px, env(safe-area-inset-top));
+        left: 12px;
+        right: 12px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-rows: auto auto;
+        row-gap: 8px;
+        column-gap: 8px;
+      }
+
+      .brand-lockup {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      .brand-home-btn {
+        font-size: 12px;
+        letter-spacing: 0.14em;
+      }
+
+      .top-utilities {
+        grid-column: 2;
+        grid-row: 1;
+        gap: 6px;
+      }
+
+      #btn-quality {
+        display: none;
+      }
+
+      .util-btn,
+      .util-btn--icon {
+        height: 34px;
+        width: 34px;
+        min-width: 34px;
+        border-radius: 999px;
+      }
+
+      .mode-switcher {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: stretch;
+        width: 100%;
+        max-width: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        padding: 3px;
+      }
+
+      .mode-pill {
+        height: 32px;
+        padding: 0 6px;
+        font-size: 12px;
+        gap: 5px;
+      }
+
+      .mode-pill .mode-idx {
+        display: none;
+      }
+
+      .hero-editorial-left {
+        top: calc(96px + env(safe-area-inset-top));
+        left: 16px;
+        right: 16px;
+        transform: none;
+        width: auto;
+        align-items: center;
+        text-align: center;
+      }
+
+      .hero-kicker {
+        font-size: 8.5px;
+        letter-spacing: 0.12em;
+        margin-bottom: 4px;
+      }
+
+      .hero-kicker-rule {
+        display: none;
+      }
+
+      .hero-display-title {
+        font-size: 29px;
+        margin-bottom: 4px;
+      }
+
+      .hero-tagline {
+        font-size: 12px;
+        margin-bottom: 0;
+      }
+
+      .hero-cta-row {
+        display: none;
+      }
+
+      /* Full-width bottom control rail with safe-area padding & zero overflow */
+      #bottom-dock {
+        left: 12px;
+        right: 12px;
+        bottom: max(12px, env(safe-area-inset-bottom));
+        transform: none;
+        width: auto;
+        max-width: none;
+        padding: 6px 8px;
+        border-radius: 16px;
+      }
+
+      body[data-app-mode="drive"] #bottom-dock {
+        padding: 8px 10px;
+        border-radius: 16px;
+      }
+
+      .layer-tab {
+        height: 34px;
+        padding: 0 11px;
+        font-size: 12px;
+      }
+
+      .systems-trigger-btn {
+        height: 34px;
+        padding: 0 11px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .wire-style-btn {
+        height: 34px;
+        padding: 0 8px;
+        font-size: 11px;
+      }
+
+      /* Mobile Popovers -> Anchored Full-Width Bottom Sheets with 44px touch targets */
+      .systems-popover {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: calc(68px + env(safe-area-inset-bottom));
+        width: auto;
+        border-radius: 18px;
+        padding: 16px;
+        transform-origin: bottom center;
+      }
+
+      .sys-mech-grid .mech-pill {
+        height: 44px;
+      }
+
+      .sys-full-btn {
+        height: 42px;
+      }
+
+      /* Hide camera pill cleanly while Systems bottom sheet is open so zero collision */
+      body:has(.systems-wrap.is-open) #camera-picker {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #camera-picker {
+        right: 12px;
+        bottom: calc(68px + env(safe-area-inset-bottom));
+      }
+
+      #btn-camera-picker {
+        height: 36px;
+        padding: 0 12px;
+        border-radius: 999px;
+        font-size: 11.5px;
+      }
+
+      body[data-app-mode="drive"] #camera-picker {
+        bottom: auto;
+        top: calc(96px + env(safe-area-inset-top));
+      }
+
+      body[data-app-mode="drive"] #touch-drive-pad {
+        bottom: calc(92px + env(safe-area-inset-bottom));
+        z-index: 36;
+      }
+
+      #status-toast {
+        top: calc(96px + env(safe-area-inset-top));
+      }
+
+      body[data-app-mode="drive"] #status-toast {
+        top: calc(140px + env(safe-area-inset-top));
+      }
+    }
+
+    @media (max-width: 380px) {
+      .hero-display-title {
+        font-size: 25px;
+      }
+
+      .systems-trigger-btn span {
+        display: none;
+      }
+
+      .systems-trigger-btn {
+        padding: 0 9px;
+      }
+    }
+
+    /* 4. Short Landscape Mobile / Foldables (max-height: 500px) */
+    @media (max-height: 500px) {
+      .hero-frame-corners,
+      .hero-tagline,
+      .hero-copy,
+      .hero-cta-row,
+      .hero-right-specs,
+      .hero-orbit-cue {
+        display: none !important;
+      }
+
+      .top-bar {
+        top: 8px;
+      }
+
+      .hero-editorial-left {
+        top: 56px;
+        left: 16px;
+        transform: none;
+        align-items: flex-start;
+        text-align: left;
+      }
+
+      .hero-kicker {
+        display: none;
+      }
+
+      .hero-display-title {
+        font-size: 22px;
+        margin-bottom: 0;
+      }
+
+      #bottom-dock {
+        bottom: 8px;
+        padding: 4px 6px;
+      }
+
+      #camera-picker {
+        bottom: 8px;
+      }
+
+      #btn-camera-picker {
+        height: 40px;
+      }
+    }
+
+    @media (pointer: coarse) {
+      body[data-app-mode="drive"] #touch-drive-pad {
+        display: flex;
+      }
+      #drive-hint-pill {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body data-app-mode="inspect" data-inspect-layer="exterior" data-theme="alabaster">
+  <!-- Full-Bleed 3D WebGPU Stage -->
+  <div id="stage-wrap" aria-label="TITAN 6X6 Interactive 3D Viewport"></div>
+
+  <!-- Single Awwwards Swiss-Automotive Editorial Hero Section (Home / Inspect Exterior Only) -->
+  <section id="hero-section" aria-label="TITAN 6X6 Hero Showcase">
+    <div class="hero-frame-corners" aria-hidden="true">
+      <span class="hero-corner hero-corner--tl"></span>
+      <span class="hero-corner hero-corner--tr"></span>
+      <span class="hero-corner hero-corner--bl"></span>
+      <span class="hero-corner hero-corner--br"></span>
+    </div>
+
+    <div class="hero-editorial-left">
+      <div class="hero-kicker">
+        <span class="hero-kicker-rule" aria-hidden="true"></span>
+        <span>01 / Concept · 6×6 Platform</span>
+      </div>
+      <h1 class="hero-display-title">TITAN<br />6<span class="hero-x">×</span>6</h1>
+      <p class="hero-tagline">Engineered beyond ordinary terrain.</p>
+      <p class="hero-copy">
+        Armored six-wheel expedition architecture built inside-out with portal axles, independent coilover suspension, and hybrid-electric drive.
+      </p>
+      <div class="hero-cta-row">
+        <button id="hero-cta-drive" type="button" class="hero-cta-primary">
+          <span>Drive the Titan</span>
+          <span class="cta-badge" aria-hidden="true">→</span>
+        </button>
+        <button id="hero-cta-explode" type="button" class="hero-cta-secondary">
+          <span>Explode View</span>
+          <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+    </div>
+
+    <aside class="hero-right-specs" aria-label="Reconstructed Specifications">
+      <div class="hero-spec-item">
+        <span class="hero-spec-k">01 / Span</span>
+        <span class="hero-spec-v">10.67 × 3.75 m</span>
+      </div>
+      <div class="hero-spec-item">
+        <span class="hero-spec-k">02 / Drivetrain</span>
+        <span class="hero-spec-v">6×6 Portal<em>INFERRED</em></span>
+      </div>
+      <div class="hero-spec-item">
+        <span class="hero-spec-k">03 / Off-Road Tires</span>
+        <span class="hero-spec-v">2.04 m · 3D Lug</span>
+      </div>
+      <div class="hero-spec-item">
+        <span class="hero-spec-k">04 / Articulation</span>
+        <span class="hero-spec-v">58 Live Pivots</span>
+      </div>
+    </aside>
+
+    <div class="hero-orbit-cue" aria-hidden="true">
+      <span class="cue-ring">↻</span>
+      <span>Drag to Orbit</span>
+    </div>
+  </section>
+
+  <!-- Minimalist Swiss Architectural Top Bar -->
+  <header class="top-bar">
+    <!-- Top-Left: Minimal Stamp (AT—08, no duplicate title!) -->
+    <div class="brand-lockup">
+      <button id="btn-brand-home" class="brand-home-btn" type="button" title="Reset View to Hero 3/4">
+        <span class="brand-accent-bar" aria-hidden="true"></span>
+        <span>AT—08</span>
+        <span class="brand-sep" aria-hidden="true"></span>
+        <span class="brand-meta-inline">EXPEDITION</span>
+      </button>
+      <div id="brand-subtitle" class="brand-sub">AT-08 · 6×6 EXPEDITION CONCEPT</div>
+      <div id="cad-telemetry" class="cad-telemetry" aria-live="polite">
+        <span class="cad-dot" aria-hidden="true"></span>
+        <span id="cad-telemetry-text">234,372 TRIS · 116 NODES · 58 PIVOTS</span>
+      </div>
+    </div>
+
+    <!-- Top-Center: Minimalist Numbered Editorial Mode Switcher -->
+    <nav id="mode-switcher" class="mode-switcher" aria-label="Experience Mode">
+      <button type="button" class="mode-pill is-active" data-app-mode="inspect">
+        <span class="mode-idx" aria-hidden="true">01</span>
+        <span>Showcase</span>
+      </button>
+      <button type="button" class="mode-pill" data-app-mode="wireframe">
+        <span class="mode-idx" aria-hidden="true">02</span>
+        <span>Wireframe</span>
+      </button>
+      <button type="button" class="mode-pill mode-pill--drive" data-app-mode="drive">
+        <span class="drive-live-dot" aria-hidden="true"></span>
+        <span>Drive</span>
+      </button>
+    </nav>
+
+    <!-- Top-Right: 3 Balanced Utility Icons -->
+    <div class="top-utilities">
+      <div id="audio-utility" class="audio-utility">
+        <button
+          id="btn-audio"
+          type="button"
+          class="util-btn util-btn--icon"
+          aria-label="Toggle Audio Mute"
+          data-tooltip="Audio · Right-click for volume"
+        >
+          <svg id="ico-sound-on" class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5z" />
+            <path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13" />
+          </svg>
+          <svg id="ico-sound-off" class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M11 5 6 9H3v6h3l5 4V5z" />
+            <path d="m22 9-6 6M16 9l6 6" />
+          </svg>
+        </button>
+        <div id="audio-popover" class="audio-popover" role="region" aria-label="Audio Gain">
+          <div class="audio-popover-head">
+            <span>Audio Gain</span>
+            <span id="top-volume-val" class="audio-popover-val">75%</span>
+          </div>
+          <input
+            id="top-volume-slider"
+            class="arch-slider arch-slider--full"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="75"
+            aria-label="Master Volume"
+          />
+        </div>
+      </div>
+
+      <button
+        id="btn-quality"
+        type="button"
+        class="util-btn"
+        data-backend="webgpu"
+        data-tooltip="Cycle Quality (High / Balanced)"
+        aria-label="Toggle Rendering Quality"
+      >
+        <span class="engine-dot" aria-hidden="true"></span>
+        <span id="renderer-badge-text">WebGPU</span>
+        <span class="engine-sep" aria-hidden="true">·</span>
+        <span id="quality-label">High</span>
+      </button>
+
+      <button
+        id="btn-shortcuts"
+        type="button"
+        class="util-btn util-btn--icon"
+        aria-label="Keyboard Shortcuts"
+        data-tooltip="Shortcuts (?)"
+      >
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9.5 9a2.7 2.7 0 0 1 5.2.9c0 1.8-2.7 2.3-2.7 4.1" />
+          <circle cx="12" cy="17.5" r="0.8" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Subtle Drive Hint Pill (Auto-fades cleanly after 4.5s on entering Drive) -->
+  <div id="drive-hint-pill" role="note" title="Click to dismiss">
+    <span><kbd>WASD</kbd> Drive</span>
+    <span><kbd>Space</kbd> Handbrake</span>
+    <span><kbd>V</kbd> Winch</span>
+    <span><kbd>L</kbd> Lights</span>
+    <span><kbd>C</kbd> Camera</span>
+    <span><kbd>R</kbd> Reset</span>
+  </div>
+
+  <!-- 8 Interactive Technical Annotations Layer (OFF by default on load) -->
+  <div id="annotations-layer" aria-label="Technical Subsystem Callouts">
+    <svg id="annotations-svg" aria-hidden="true"></svg>
+    <div id="annotations-pins"></div>
+  </div>
+
+  <!-- Compact Annotation Detail Drawer (Upper-Right Margin, visible only when a pin is clicked) -->
+  <aside id="annotation-drawer" aria-live="polite">
+    <div class="drawer-head">
+      <div>
+        <div id="drawer-code" class="drawer-code">01 / ARMORED BODY</div>
+        <h3 id="drawer-title" class="drawer-title">Armored Body</h3>
+      </div>
+      <button id="drawer-close" type="button" class="drawer-close" aria-label="Close Detail Drawer">×</button>
+    </div>
+    <div id="drawer-provenance" class="drawer-provenance" data-kind="exterior">Reconstructed Exterior</div>
+    <p id="drawer-summary" class="drawer-summary"></p>
+    <div id="drawer-specs" class="drawer-specs"></div>
+  </aside>
+
+  <!-- Single-Row 48px Awwwards Floating Control Rail + Progressive Systems Popover -->
+  <section id="bottom-dock" aria-label="Vehicle Control Dock">
+    <!-- MODE 1: SHOWCASE / INSPECT SINGLE-ROW RAIL -->
+    <div id="dock-inspect" class="dock-panel">
+      <div class="dock-top-row">
+        <div id="inspect-layer-strip" class="layer-strip" role="tablist" aria-label="Engineering Layers">
+          <button type="button" class="layer-tab is-active" data-inspect-mode="exterior" role="tab">
+            <span class="tab-dot" aria-hidden="true"></span><span>Exterior</span>
+          </button>
+          <button type="button" class="layer-tab" data-inspect-mode="chassis" role="tab">
+            <span class="tab-dot" aria-hidden="true"></span><span>Chassis</span>
+          </button>
+          <button type="button" class="layer-tab" data-inspect-mode="powertrain" role="tab">
+            <span class="tab-dot" aria-hidden="true"></span><span>Powertrain</span>
+          </button>
+          <button type="button" class="layer-tab" data-inspect-mode="suspension" role="tab">
+            <span class="tab-dot" aria-hidden="true"></span><span>Suspension</span>
+          </button>
+          <button type="button" class="layer-tab" data-inspect-mode="interior" role="tab">
+            <span class="tab-dot" aria-hidden="true"></span><span>Interior</span>
+          </button>
+          <button type="button" class="layer-tab" data-inspect-mode="electrical" role="tab">
+            <span class="tab-dot" aria-hidden="true"></span><span>Electrical</span>
+          </button>
+          <button type="button" class="layer-tab" data-inspect-mode="exploded" role="tab">
+            <span class="tab-dot" aria-hidden="true"></span><span>Exploded</span>
+          </button>
+        </div>
+      </div>
+
+      <span class="v-sep" aria-hidden="true"></span>
+
+      <!-- Progressive-Disclosure Systems Popover -->
+      <div id="systems-wrap-inspect" class="systems-wrap">
+        <button
+          id="btn-systems-inspect"
+          type="button"
+          class="systems-trigger-btn"
+          aria-haspopup="true"
+          aria-expanded="false"
+          title="Open Mechanical Systems, Explode Slider & Callouts"
+        >
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+          </svg>
+          <span>Systems</span>
+          <svg class="sys-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m18 15-6-6-6 6" />
+          </svg>
+        </button>
+
+        <div class="systems-popover" role="region" aria-label="Mechanical Systems Controls">
+          <div class="sys-pop-head">
+            <span>Engineering Systems</span>
+            <kbd class="pill-key">ESC</kbd>
+          </div>
+
+          <label class="sys-explode-box" for="explode-slider">
+            <div class="sys-explode-top">
+              <span class="explode-label">Exploded Assembly</span>
+              <span id="explode-value" class="explode-readout">0%</span>
+            </div>
+            <input
+              id="explode-slider"
+              class="arch-slider arch-slider--full"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="0"
+              aria-label="Explode Assembly Percentage"
+            />
+          </label>
+
+          <div class="sys-mech-grid">
+            <button id="btn-doors" type="button" class="mech-pill" title="Toggle Cabin Doors (E)">
+              <span class="mech-pill-main">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 20V5a2 2 0 0 1 2-2h7l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z" />
+                  <path d="M10 12h3" />
+                </svg>
+                <span>Doors</span>
+              </span>
+              <span class="status-dot" aria-hidden="true"></span>
+            </button>
+
+            <button id="btn-hatches" type="button" class="mech-pill" title="Toggle Service Hatches">
+              <span class="mech-pill-main">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M3 10h18M9 14h6" />
+                </svg>
+                <span>Hatches</span>
+              </span>
+              <span class="status-dot" aria-hidden="true"></span>
+            </button>
+
+            <button id="btn-lights" type="button" class="mech-pill is-on" title="Toggle Headlights (L)">
+              <span class="mech-pill-main">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 17h4a5 5 0 0 0 0-10H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z" />
+                  <path d="M18 9l3-1M18 12h3M18 15l3 1" />
+                </svg>
+                <span>Lights</span>
+              </span>
+              <span class="status-dot" aria-hidden="true"></span>
+            </button>
+
+            <button id="btn-winch" type="button" class="mech-pill is-amber" title="Deploy / Retract Front Recovery Winch (V)">
+              <span class="mech-pill-main">
+                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="8" cy="12" r="4" />
+                  <path d="M12 12h7M19 12a2 2 0 0 1 0 4h-1" />
+                </svg>
+                <span id="inspect-winch-label">Winch</span>
+              </span>
+              <span class="status-dot" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <button id="btn-annotations" type="button" class="mech-pill sys-full-btn" title="Toggle 3D Engineering Callouts">
+            <span class="mech-pill-main">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 3v3M12 18v3M3 12h3M18 12h3" />
+              </svg>
+              <span>3D Engineering Callouts</span>
+            </span>
+            <span class="status-dot" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODE 2: WIREFRAME CAD SINGLE-ROW RAIL -->
+    <div id="dock-wireframe" class="dock-panel">
+      <div class="dock-top-row">
+        <div class="wire-styles-strip" role="radiogroup" aria-label="Wireframe Render Style">
+          <button type="button" class="wire-style-btn is-active" data-wire-style="wire_tech">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3z" />
+              <path d="M12 12l8-4.5M12 12v9M12 12 4 7.5" />
+            </svg>
+            <span class="lbl-full">Technical CAD</span>
+            <span class="lbl-short">Tech CAD</span>
+          </button>
+          <button type="button" class="wire-style-btn" data-wire-style="wire_blueprint">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" />
+              <rect x="3" y="4" width="18" height="16" rx="2" />
+            </svg>
+            <span class="lbl-full">Blueprint X-Ray</span>
+            <span class="lbl-short">Blueprint</span>
+          </button>
+          <button type="button" class="wire-style-btn" data-wire-style="wire_mesh">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 3 19h18L12 3z" />
+              <path d="M12 3v16M7.5 11h9M12 19l4.5-8M12 19 7.5 11" />
+            </svg>
+            <span class="lbl-full">Pure Mesh</span>
+            <span class="lbl-short">Pure Mesh</span>
+          </button>
+        </div>
+      </div>
+
+      <span class="v-sep" aria-hidden="true"></span>
+
+      <div id="systems-wrap-wire" class="systems-wrap">
+        <button
+          id="btn-systems-wire"
+          type="button"
+          class="systems-trigger-btn"
+          aria-haspopup="true"
+          aria-expanded="false"
+          title="Open CAD Layer Filter, Explode & Doors"
+        >
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2 2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+          <span>CAD Options</span>
+          <svg class="sys-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m18 15-6-6-6 6" />
+          </svg>
+        </button>
+
+        <div class="systems-popover" role="region" aria-label="CAD Wireframe Options">
+          <div class="sys-pop-head">
+            <span>CAD Layers &amp; Assembly</span>
+            <kbd class="pill-key">ESC</kbd>
+          </div>
+
+          <div class="sys-wire-layers" role="tablist" aria-label="Wireframe Layer Filter">
+            <button type="button" class="wire-layer-btn is-active" data-inspect-mode="exterior">Exterior</button>
+            <button type="button" class="wire-layer-btn" data-inspect-mode="chassis">Chassis</button>
+            <button type="button" class="wire-layer-btn" data-inspect-mode="powertrain">Powertrain</button>
+            <button type="button" class="wire-layer-btn" data-inspect-mode="suspension">Suspension</button>
+            <button type="button" class="wire-layer-btn" data-inspect-mode="interior">Interior</button>
+            <button type="button" class="wire-layer-btn" data-inspect-mode="exploded">Exploded</button>
+          </div>
+
+          <label class="sys-explode-box" for="wire-explode-slider">
+            <div class="sys-explode-top">
+              <span class="explode-label">Exploded Assembly</span>
+              <span id="wire-explode-value" class="explode-readout">0%</span>
+            </div>
+            <input
+              id="wire-explode-slider"
+              class="arch-slider arch-slider--full"
+              type="range"
+              min="0"
+              max="100"
+              step="1"
+              value="0"
+              aria-label="Wireframe Explode Assembly Percentage"
+            />
+          </label>
+
+          <div class="sys-wire-switches">
+            <button id="wire-btn-doors" type="button" class="mech-pill mech-pill--compact" title="Toggle Cabin Doors (E)">
+              <span>Doors</span>
+              <span class="status-dot" aria-hidden="true"></span>
+            </button>
+            <button id="wire-btn-hatches" type="button" class="mech-pill mech-pill--compact" title="Toggle Service Hatches">
+              <span>Hatches</span>
+              <span class="status-dot" aria-hidden="true"></span>
+            </button>
+            <button id="wire-btn-annotations" type="button" class="mech-pill mech-pill--compact" title="Toggle 3D Engineering Callouts">
+              <span>Callouts</span>
+              <span class="status-dot" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODE 3: DRIVE TELEMETRY DOCK -->
+    <div id="dock-drive" class="dock-panel">
+      <div class="drive-cluster-row">
+        <!-- Speed, Gear & Lamps -->
+        <div class="drive-speed-zone">
+          <div class="drive-speed-readout">
+            <span id="hud-speed">00</span>
+            <span class="drive-unit">KM/H</span>
+          </div>
+          <div class="drive-gear-meta">
+            <div class="drive-gear-top">
+              <span id="hud-gear">N</span>
+              <span id="hud-surface">CONCRETE</span>
+            </div>
+            <div class="drive-rpm-track"><div id="hud-rpm-fill"></div></div>
+            <div class="drive-lamps">
+              <span id="hud-lamp-brake" class="drive-lamp">BRK</span>
+              <span id="hud-lamp-hb" class="drive-lamp">HB</span>
+              <span id="hud-lamp-lights" class="drive-lamp is-lit-blue">LED</span>
+              <span class="drive-lamp is-lit-blue">6WD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6-Wheel Live Suspension Travel Bars -->
+        <div class="drive-susp-zone" aria-label="6-Wheel Suspension Travel">
+          <div class="drive-susp-bars">
+            <div class="susp-col" data-wheel-col="0">
+              <div class="susp-track"><div class="susp-fill" data-wheel-bar="0"></div></div>
+              <span class="susp-tag"><span class="susp-dot"></span>FL</span>
+            </div>
+            <div class="susp-col" data-wheel-col="1">
+              <div class="susp-track"><div class="susp-fill" data-wheel-bar="1"></div></div>
+              <span class="susp-tag"><span class="susp-dot"></span>FR</span>
+            </div>
+            <div class="susp-col" data-wheel-col="2">
+              <div class="susp-track"><div class="susp-fill" data-wheel-bar="2"></div></div>
+              <span class="susp-tag"><span class="susp-dot"></span>ML</span>
+            </div>
+            <div class="susp-col" data-wheel-col="3">
+              <div class="susp-track"><div class="susp-fill" data-wheel-bar="3"></div></div>
+              <span class="susp-tag"><span class="susp-dot"></span>MR</span>
+            </div>
+            <div class="susp-col" data-wheel-col="4">
+              <div class="susp-track"><div class="susp-fill" data-wheel-bar="4"></div></div>
+              <span class="susp-tag"><span class="susp-dot"></span>RL</span>
+            </div>
+            <div class="susp-col" data-wheel-col="5">
+              <div class="susp-track"><div class="susp-fill" data-wheel-bar="5"></div></div>
+              <span class="susp-tag"><span class="susp-dot"></span>RR</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Drive Action Pills -->
+        <div class="drive-actions-zone">
+          <button id="drive-btn-lights" type="button" class="mech-pill is-on" title="Headlights (L)">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 17h4a5 5 0 0 0 0-10H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z" />
+              <path d="M18 9l3-1M18 12h3M18 15l3 1" />
+            </svg>
+            <span class="btn-lbl">Lights</span>
+            <span class="status-dot" aria-hidden="true"></span>
+          </button>
+          <button id="drive-btn-winch" type="button" class="mech-pill is-amber" title="Recovery Winch (V)">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="8" cy="12" r="4" />
+              <path d="M12 12h7M19 12a2 2 0 0 1 0 4h-1" />
+            </svg>
+            <span id="drive-winch-label" class="btn-lbl">Winch</span>
+            <span class="status-dot" aria-hidden="true"></span>
+          </button>
+          <button id="drive-btn-doors" type="button" class="mech-pill" title="Cabin Doors (E)">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 20V5a2 2 0 0 1 2-2h7l5 5v12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z" />
+              <path d="M10 12h3" />
+            </svg>
+            <span class="btn-lbl">Doors</span>
+            <span class="status-dot" aria-hidden="true"></span>
+          </button>
+          <button id="drive-btn-reset" type="button" class="mech-pill" title="Reset Vehicle (R)">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            <span class="btn-lbl">Reset</span>
+          </button>
+          <button id="drive-btn-pause" type="button" class="mech-pill" title="Pause / Controls (Esc)">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 6v12M15 6v12" />
+            </svg>
+            <span class="btn-lbl">Pause</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bottom-Right Floating Camera Picker + Upward Popover -->
+  <div id="camera-picker">
+    <div id="camera-popover" role="menu" aria-label="Camera Viewpoints">
+      <div class="cam-popover-head">
+        <span id="camera-popover-title">Studio Viewpoints</span>
+        <kbd class="pill-key">C</kbd>
+      </div>
+      <div id="camera-popover-list" class="cam-popover-list"></div>
+      <div class="cam-popover-footer">
+        <button id="btn-reset-orbit" type="button" class="cam-reset-btn">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          <span>Reset Orbit</span>
+        </button>
+      </div>
+    </div>
+
+    <button
+      id="btn-camera-picker"
+      type="button"
+      aria-haspopup="menu"
+      aria-expanded="false"
+      title="Select Camera Viewpoint (Press C to cycle)"
+    >
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M23 7l-7 5 7 5V7z" />
+        <rect x="1" y="5" width="15" height="14" rx="2" />
+      </svg>
+      <span id="cam-picker-label">Hero 3/4</span>
+      <kbd class="pill-key">C</kbd>
+      <svg class="ico cam-chevron" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="m18 15-6-6-6 6" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile Touch Drive Controls (Shown ONLY in Drive Mode on Touch/Mobile) -->
+  <div id="touch-drive-pad" aria-label="Touch Driving Controls">
+    <div class="touch-cluster">
+      <button type="button" class="touch-btn" data-touch-key="left" aria-label="Steer Left">◀</button>
+      <button type="button" class="touch-btn" data-touch-key="right" aria-label="Steer Right">▶</button>
+    </div>
+    <div class="touch-cluster">
+      <button type="button" class="touch-btn" data-touch-key="handbrake">HB</button>
+      <button type="button" class="touch-btn" data-touch-key="brake">REV</button>
+      <button type="button" class="touch-btn" data-touch-key="throttle">GAS</button>
+    </div>
+  </div>
+
+  <!-- Centered Shortcuts & Pause Modal (? / Esc) -->
+  <div id="shortcuts-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="shortcuts-card">
+      <div class="modal-header">
+        <div>
+          <div id="modal-kicker" class="modal-kicker">TITAN 6X6 · CONTROLS</div>
+          <h2 id="modal-title" class="modal-title">Keyboard Shortcuts</h2>
+        </div>
+        <button id="modal-close" type="button" class="drawer-close" aria-label="Close Modal">×</button>
+      </div>
+
+      <div class="modal-actions">
+        <button id="modal-btn-resume" type="button" class="modal-btn modal-btn--primary">Resume</button>
+        <button id="modal-btn-reset" type="button" class="modal-btn">Reset Vehicle / View</button>
+        <button id="modal-btn-inspect" type="button" class="modal-btn">Inspect Studio</button>
+        <button id="modal-btn-wireframe" type="button" class="modal-btn">Wireframe CAD</button>
+      </div>
+
+      <div class="modal-volume-row">
+        <span>AUDIO GAIN</span>
+        <input
+          id="modal-volume"
+          class="arch-slider"
+          type="range"
+          min="0"
+          max="100"
+          step="1"
+          value="75"
+          style="width: 190px;"
+          aria-label="Audio Gain"
+        />
+        <span id="modal-volume-val" class="vol-val">75%</span>
+      </div>
+
+      <div class="shortcuts-grid">
+        <div class="shortcut-item"><span>Accelerate / Reverse</span><kbd>W S / ↑ ↓</kbd></div>
+        <div class="shortcut-item"><span>Steer 6×6</span><kbd>A D / ← →</kbd></div>
+        <div class="shortcut-item"><span>Handbrake</span><kbd>Space</kbd></div>
+        <div class="shortcut-item"><span>Cycle Camera</span><kbd>C</kbd></div>
+        <div class="shortcut-item"><span>Toggle Wireframe</span><kbd>F</kbd></div>
+        <div class="shortcut-item"><span>Toggle Exploded</span><kbd>X</kbd></div>
+        <div class="shortcut-item"><span>Headlights</span><kbd>L</kbd></div>
+        <div class="shortcut-item"><span>Cabin Doors</span><kbd>E</kbd></div>
+        <div class="shortcut-item"><span>Recovery Winch</span><kbd>V</kbd></div>
+        <div class="shortcut-item"><span>Reset Vehicle / View</span><kbd>R</kbd></div>
+        <div class="shortcut-item"><span>Inspect / Drive</span><kbd>Tab</kbd></div>
+        <div class="shortcut-item"><span>Shortcuts</span><kbd>?</kbd></div>
+        <div class="shortcut-item"><span>Pause / Close</span><kbd>Esc</kbd></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subtle Micro Action Toast -->
+  <div id="status-toast" role="status" aria-live="polite"></div>
+
+  <!-- Architectural Loading Veil -->
+  <div id="loader-overlay">
+    <div class="loader-inner">
+      <div class="loader-eyebrow">EXPEDITION CONCEPT AT-08</div>
+      <div class="loader-title">TITAN 6X6</div>
+      <div class="loader-bar-track"><div id="loader-bar"></div></div>
+      <div class="loader-meta">
+        <span id="loader-status">Initializing WebGPU renderer…</span>
+        <span id="loader-pct">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/titan-truck/app.js"></script>
+</body>
+</html>

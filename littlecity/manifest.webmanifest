@@ -1,0 +1,39 @@
+{
+  "name": "Little City",
+  "short_name": "Little City",
+  "description": "A hand-drawn town diorama builder. Place a few blocks, watch them turn into a town, then watch it come to life.",
+  "start_url": "/games/littlecity/",
+  "scope": "/games/littlecity/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#f2ede3",
+  "theme_color": "#f2ede3",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "/games/littlecity/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/games/littlecity/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/games/littlecity/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/games/littlecity/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

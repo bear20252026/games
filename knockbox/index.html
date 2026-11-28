@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Knockbox — The Drum Machine with a Drunk Swing</title>
+    <meta name="description" content="Knockbox is a browser drum machine with a crooked, off-the-grid swing. Program beats, chop your voice into the pocket, and bounce MIDI, WAV and stems. No install.">
+    <meta name="theme-color" content="#1a120a">
+
+    <!-- Icons -->
+    <link rel="icon" href="./favicon.ico" sizes="48x48">
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./public/images/apple-touch-icon.png">
+    <link rel="manifest" href="./site.webmanifest">
+
+    <!-- Link previews -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Knockbox">
+    <meta property="og:title" content="Knockbox — The Drum Machine with a Drunk Swing">
+    <meta property="og:description" content="Beats that lean. Program drums, chop your voice into the pocket, and bounce MIDI, WAV and stems, all in your browser.">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Knockbox logo: a beatmaker in a bucket hat and headphones, mid-nod">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Knockbox — The Drum Machine with a Drunk Swing">
+    <meta name="twitter:description" content="Beats that lean. Program drums, chop your voice into the pocket, and bounce MIDI, WAV and stems, all in your browser.">
+
+    <!-- What this is, for search engines -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Knockbox",
+        "url": "https://knockbox.app/",
+        "description": "A browser drum machine with a crooked, off-the-grid swing. Program beats, chop your voice into the pocket, and bounce MIDI, WAV and stems.",
+        "applicationCategory": "MultimediaApplication",
+        "applicationSubCategory": "Drum machine",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires a modern desktop browser with Web Audio",
+        "image": "https://knockbox.app/public/images/og-image.png"
+    }
+    </script>
+
+    <!-- Preload Rive runtime and animation for faster rendering: only where the desk fits (a phone never fetches them) -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/@rive-app/canvas@2.34.0/+esm" as="script" crossorigin="anonymous" media="(min-width: 900px) and (min-height: 481px)">
+    <link rel="preload" href="./public/3dModels/head_bob.riv" as="fetch" crossorigin="anonymous" media="(min-width: 900px) and (min-height: 481px)">
+
+    <!-- Workstation font stack -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Fonts load off the critical path: a slow/blocked Google Fonts request must not hold up the desk or the phone note. -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bowlby+One&family=JetBrains+Mono:wght@400;500;700&family=Permanent+Marker&family=Special+Elite&family=VT323&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Anton&family=Bowlby+One&family=JetBrains+Mono:wght@400;500;700&family=Permanent+Marker&family=Special+Elite&family=VT323&display=swap" rel="stylesheet"></noscript>
+
+    <!-- Critical CSS - inlined for fast initial render -->
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            background: #1a120a;
+            font-family: "JetBrains Mono", monospace;
+            color: #e9e1d3;
+        }
+        /* Hide body until main.css applies, then fade in.
+           Prevents FOUT during the async main.css load window.
+           main.css overrides this with `body { opacity: 1 }` so the
+           transition runs the moment the stylesheet is parsed. */
+        body {
+            opacity: 1;
+            transition: opacity 0.25s ease-out;
+        }
+        .desk {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 18%, rgba(255, 200, 130, 0.18), transparent 70%),
+                radial-gradient(ellipse 90% 90% at 50% 55%, transparent 40%, rgba(0, 0, 0, 0.55) 100%),
+                linear-gradient(180deg, #5a3a22 0%, #4a2e1a 60%, #3a230f 100%);
+            isolation: isolate;
+        }
+        .sampler-stage {
+            position: absolute;
+            bottom: 33vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: clamp(820px, 72vw, 1400px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+    </style>
+
+    <!-- Non-critical CSS - loaded async -->
+    <link rel="stylesheet" href="./src/main.css">
+    <link rel="stylesheet" href="./src/stickers.css">
+</head>
+
+<body>
+    <!-- A beat's link opened on a screen too small for the desk: a player card (Player.js) -->
+    <div id="player" class="player" hidden></div>
+
+    <!-- Shown instead of the desk on a screen too small to work it (see .too-small in main.css) -->
+    <div class="too-small" role="dialog" aria-labelledby="too-small-title">
+        <img src="./public/images/knockbox-logo.svg" alt="" class="too-small-logo" />
+        <p class="too-small-kicker">— Knockbox —</p>
+        <h2 class="too-small-title" id="too-small-title">You cooking in a <em>frying pan</em> outchea.</h2>
+        <p class="too-small-text">This desk needs elbow room. Whip out the laptop and get that full experience, b.</p>
+        <button class="too-small-copy" type="button">Copy the link for later</button>
+    </div>
+
+    <div class="desk">
+
+        <!-- Desk cables. Cables.js routes each one to its jack on the sampler in
+             screen pixels (no viewBox), so plugs always meet the chassis and
+             never stretch. The chassis (z-index 10) covers each plug tip, so
+             they read as pushed home into the jack. -->
+        <svg class="cables" aria-hidden="true">
+            <defs>
+                <linearGradient id="rcaWhite" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#f4ecd6" />
+                    <stop offset="40%" stop-color="#e0d4b4" />
+                    <stop offset="100%" stop-color="#a89c7a" />
+                </linearGradient>
+                <linearGradient id="rcaRed" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#e85a2a" />
+                    <stop offset="40%" stop-color="#c2410c" />
+                    <stop offset="100%" stop-color="#7a2810" />
+                </linearGradient>
+                <linearGradient id="rcaMetal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#d4cfc4" />
+                    <stop offset="40%" stop-color="#a89e8a" />
+                    <stop offset="100%" stop-color="#5a4f3a" />
+                </linearGradient>
+                <!-- Moulded black plug body: lit along the lamp-side edge -->
+                <linearGradient id="plugRubber" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#4a443b" />
+                    <stop offset="35%" stop-color="#26221d" />
+                    <stop offset="100%" stop-color="#0c0a08" />
+                </linearGradient>
+                <filter id="plugShadow" x="-50%" y="-50%" width="200%" height="200%">
+                    <feDropShadow dx="2" dy="6" stdDeviation="3" flood-color="#000" flood-opacity="0.55" />
+                </filter>
+            </defs>
+
+            <!-- Filled by Cables.js: shadows for all cables first, jackets on top -->
+            <g class="cable-shadows"></g>
+            <g class="cable-runs"></g>
+
+            <!-- White RCA plug (drawn pointing right; chassis wall sits at x=30) -->
+            <g data-plug="rca-l" filter="url(#plugShadow)">
+                <rect x="-26" y="-9" width="22" height="18" rx="3" fill="#15110a" />
+                <rect x="-26" y="-8" width="22" height="16" rx="2" fill="#2a2520" />
+                <line x1="-22" y1="-8" x2="-22" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <line x1="-17" y1="-8" x2="-17" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <line x1="-12" y1="-8" x2="-12" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <line x1="-7" y1="-8" x2="-7" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <rect x="-4" y="-13" width="32" height="26" rx="3" fill="url(#rcaWhite)" />
+                <rect x="-4" y="-13" width="32" height="3" fill="rgba(255,255,255,0.4)" />
+                <rect x="-4" y="10" width="32" height="3" fill="rgba(0,0,0,0.25)" />
+                <rect x="14" y="-13" width="3" height="26" fill="rgba(0,0,0,0.18)" />
+                <rect x="26" y="-11" width="10" height="22" rx="1.5" fill="url(#rcaMetal)" />
+                <ellipse cx="36" cy="0" rx="2" ry="11" fill="#1a1510" />
+                <rect x="36" y="-1.8" width="14" height="3.6" rx="0.8" fill="url(#rcaMetal)" />
+                <text x="-15" y="2.5" font-family="JetBrains Mono, monospace" font-size="7" fill="#1a1510" text-anchor="middle">L</text>
+            </g>
+            <!-- Red RCA plug -->
+            <g data-plug="rca-r" filter="url(#plugShadow)">
+                <rect x="-26" y="-9" width="22" height="18" rx="3" fill="#15110a" />
+                <rect x="-26" y="-8" width="22" height="16" rx="2" fill="#2a2520" />
+                <line x1="-22" y1="-8" x2="-22" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <line x1="-17" y1="-8" x2="-17" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <line x1="-12" y1="-8" x2="-12" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <line x1="-7" y1="-8" x2="-7" y2="8" stroke="#0a0805" stroke-width="0.8" />
+                <rect x="-4" y="-13" width="32" height="26" rx="3" fill="url(#rcaRed)" />
+                <rect x="-4" y="-13" width="32" height="3" fill="rgba(255,255,255,0.25)" />
+                <rect x="-4" y="10" width="32" height="3" fill="rgba(0,0,0,0.35)" />
+                <rect x="14" y="-13" width="3" height="26" fill="rgba(0,0,0,0.3)" />
+                <rect x="26" y="-11" width="10" height="22" rx="1.5" fill="url(#rcaMetal)" />
+                <ellipse cx="36" cy="0" rx="2" ry="11" fill="#1a1510" />
+                <rect x="36" y="-1.8" width="14" height="3.6" rx="0.8" fill="url(#rcaMetal)" />
+                <text x="-15" y="2.5" font-family="JetBrains Mono, monospace" font-size="7" fill="#c2410c" text-anchor="middle">R</text>
+            </g>
+            <!-- DC barrel plug (drawn pointing right, rotated to enter the rear
+                 panel; chassis wall sits at x=24) -->
+            <g data-plug="power" filter="url(#plugShadow)">
+                <!-- ribbed strain relief tapering into the cord -->
+                <path d="M -34 -5.5 L -8 -8.5 L -8 8.5 L -34 5.5 Z" fill="url(#plugRubber)" />
+                <line x1="-29" y1="-6" x2="-29" y2="6" stroke="#060504" stroke-width="1.4" />
+                <line x1="-24" y1="-6.6" x2="-24" y2="6.6" stroke="#060504" stroke-width="1.4" />
+                <line x1="-19" y1="-7.2" x2="-19" y2="7.2" stroke="#060504" stroke-width="1.4" />
+                <line x1="-14" y1="-7.8" x2="-14" y2="7.8" stroke="#060504" stroke-width="1.4" />
+                <!-- moulded grip -->
+                <rect x="-8" y="-11" width="30" height="22" rx="3" fill="url(#plugRubber)" />
+                <rect x="-6" y="-10" width="26" height="1.5" rx="0.75" fill="rgba(255,240,215,0.22)" />
+                <!-- metal barrel -->
+                <rect x="22" y="-5" width="16" height="10" rx="1" fill="url(#rcaMetal)" />
+            </g>
+
+            <!-- XLR plug on the microphone lead (drawn pointing right, mirrored
+                 to enter the chassis' right wall) -->
+            <g data-plug="mic" filter="url(#plugShadow)">
+                <!-- rubber boot tapering into the cable -->
+                <path d="M -30 -4.5 L -6 -8 L -6 8 L -30 4.5 Z" fill="url(#plugRubber)" />
+                <line x1="-24" y1="-5.2" x2="-24" y2="5.2" stroke="#060504" stroke-width="1.4" />
+                <line x1="-18" y1="-6" x2="-18" y2="6" stroke="#060504" stroke-width="1.4" />
+                <line x1="-12" y1="-6.8" x2="-12" y2="6.8" stroke="#060504" stroke-width="1.4" />
+                <!-- metal shell with its latch -->
+                <rect x="-6" y="-10" width="34" height="20" rx="2.5" fill="url(#rcaMetal)" />
+                <rect x="-4" y="-9" width="30" height="1.5" rx="0.75" fill="rgba(255,255,255,0.35)" />
+                <rect x="8" y="-12.5" width="9" height="4" rx="1" fill="url(#rcaMetal)" />
+                <rect x="28" y="-8" width="4" height="16" rx="1" fill="#1a1510" />
+            </g>
+        </svg>
+
+        <div class="stage">
+            <!-- The header (ADR-0080): the wordmark top left, who is at the desk top right -->
+            <header class="desk-top">
+                <h1 class="brand">
+                    <img src="./public/images/knockbox-logo.svg" alt="" class="logo-mark" />
+                    <span>Knock<em>box</em></span>
+                </h1>
+                <nav class="desk-nav" aria-label="Knockbox">
+                    <button type="button" id="how-btn" class="how-btn" aria-haspopup="dialog" aria-label="How it works"><span class="how-words">How it works</span><b class="how-mark" aria-hidden="true">?</b></button>
+                    <!-- A SIGN IN key, or a face and a name with their menu (AccountMenu.js) -->
+                    <div id="account" class="account" hidden></div>
+                </nav>
+            </header>
+
+            <!-- Vinyl record (bottom-left, clips off edge) -->
+            <div class="prop prop-vinyl">
+                <div class="sleeve"></div>
+                <div class="vinyl"></div>
+                <div class="sticker" style="top: 0.5vh; right: -0.5vw;">SIDE A</div>
+            </div>
+
+            <!-- LP fan cluster (bottom-left center) -->
+            <div class="prop prop-lp-fan">
+                <div class="lp-fan">
+                    <div class="lp-with-peek" style="transform: rotate(-6deg); z-index: 3;">
+                        <div class="lp-vinyl-peek"></div>
+                        <div class="lp lp--photo">
+                            <div class="lp-photo-img"><img src="./public/images/lp-cover-photo.jpg?v=2" alt="" loading="lazy" onerror="this.parentElement.style.display='none'" /></div>
+                            <div class="footer">Crate Find<small>45 RPM</small></div>
+                        </div>
+                    </div>
+                    <div class="lp-with-peek" style="transform: translate(45%, 12%) rotate(4deg); z-index: 2;">
+                        <div class="lp-vinyl-peek"></div>
+                        <div class="lp lp--stripes">
+                            <div class="badge">Drum Breaks<small>VOL · II</small></div>
+                        </div>
+                    </div>
+                    <div class="lp-with-peek" style="transform: translate(82%, 22%) rotate(10deg); z-index: 1;">
+                        <div class="lp-vinyl-peek"></div>
+                        <div class="lp lp--circles">
+                            <div class="meta">NIGHT OWL · 1973</div>
+                            <div class="title">Strings & Things</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Polaroid (top-right) -->
+            <div class="prop prop-polaroid">
+                <div class="polaroid">
+                    <div class="polaroid-photo"><img src="./public/images/polaroid-studio.jpg?v=2" alt="Studio" loading="lazy" onerror="this.parentElement.style.background='radial-gradient(circle at 30% 30%, #6b4a2a 0%, #2a1f10 80%)';this.style.display='none'" /></div>
+                    <div class="polaroid-caption">The lab · '99</div>
+                </div>
+            </div>
+
+            <!-- Cassette = everything that leaves the desk as a file (right side) -->
+            <div class="prop prop-cassette">
+                <div class="cassette cassette--export">
+                    <div class="cassette-label">
+                        <p class="tagline">★ BASEMENT TAPES ★</p>
+                        <button id="export-menu-btn" class="cassette-export" type="button"
+                                aria-haspopup="menu" aria-expanded="false" aria-controls="export-menu">Export as <span class="cassette-export-caret" aria-hidden="true">▾</span></button>
+                    </div>
+                    <div class="cassette-reels">
+                        <div class="reel"></div>
+                        <div class="reel"></div>
+                        <div class="cassette-window"></div>
+                    </div>
+                    <!-- Not a file for a DAW: what other people open -->
+                    <button id="share-btn" class="cassette-share" type="button"
+                            aria-haspopup="menu" aria-expanded="false" aria-controls="share-menu">Share</button>
+                    <div id="share-menu" class="share-card" role="menu" aria-label="Share" hidden>
+                        <button id="share-link-btn" class="cassette-action" type="button" role="menuitem">
+                            <b>Link</b><span>anyone can play it, and flip it</span></button>
+                        <button id="share-video-btn" class="cassette-action" type="button" role="menuitem" hidden>
+                            <b>Video</b><span>your tape playing in a deck, for your feed</span></button>
+                    </div>
+                    <!-- The inlay card: what the tape can be bounced to, a line each -->
+                    <div id="export-menu" class="cassette-menu" role="menu" aria-label="Export as" hidden>
+                        <button id="export-midi-btn" class="cassette-action" type="button" role="menuitem" draggable="true">
+                            <b>MIDI</b><span>this beat as notes, feel and all. Drags into your DAW too</span></button>
+                        <button id="export-wav-btn" class="cassette-action" type="button" role="menuitem">
+                            <b>WAV</b><span>the whole loop as audio</span></button>
+                        <button id="export-stems-btn" class="cassette-action" type="button" role="menuitem">
+                            <b>Stems</b><span>a loop for each drum, zipped</span></button>
+                        <button id="export-groove-btn" class="cassette-action" type="button" role="menuitem">
+                            <b>Groove</b><span>the feel without the beat, to put on drums you already have</span></button>
+                    </div>
+                    <span class="cassette-confirm" aria-live="polite"></span>
+                </div>
+                <!-- J-card: what the last bounce made, as strips to drag out -->
+                <div class="cassette-tray" hidden></div>
+            </div>
+
+            <!-- Disk box = saved beats (on the bare wood left of the sampler);
+                 filled in by DiskBox.js -->
+            <div id="disk-box" class="prop prop-disks" hidden></div>
+
+            <!-- The disk file: beats from other desks, under your own box (filled in by Crate.js) -->
+            <div id="crate" class="prop prop-crate" hidden></div>
+
+            <!-- Funk Mechanics live LP (bottom-right, tilted) -->
+            <div class="prop prop-funk">
+                <div class="lp-with-peek" style="width: 100%;">
+                    <div class="lp-vinyl-peek"></div>
+                    <div class="lp lp--live">
+                        <img src="./public/images/lp-cover-live.jpg?v=2" alt="" loading="lazy" onerror="this.style.display='none'" />
+                        <div class="title">Funk<br/>Mechanics<small>LIVE · VOL III</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Microphone = voice in. Tap to record over the loop, or drop a
+                 file on it; its lead is routed to the chassis by Cables.js -->
+            <div id="vox-mic" class="prop prop-mic">
+                <button class="mic-btn" type="button"
+                        aria-label="Record your voice over the loop"
+                        data-tooltip="Record two bars of voice over the loop — it gets sliced and dropped into the pocket. Or drop an audio loop here (WAV, MP3, AAC…).">
+                    <div class="mic-body">
+                        <svg viewBox="0 0 260 120" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="micBarrel" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#6f675c" />
+                                    <stop offset="22%" stop-color="#4a433a" />
+                                    <stop offset="70%" stop-color="#231e19" />
+                                    <stop offset="100%" stop-color="#14110e" />
+                                </linearGradient>
+                                <radialGradient id="micGrille" cx="38%" cy="30%" r="75%">
+                                    <stop offset="0%" stop-color="#d9d2c4" />
+                                    <stop offset="45%" stop-color="#8d867a" />
+                                    <stop offset="100%" stop-color="#2e2a25" />
+                                </radialGradient>
+                                <pattern id="micMesh" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                                    <rect width="5" height="5" fill="none" />
+                                    <path d="M 0 0 H 5 M 0 0 V 5" stroke="rgba(20,16,12,0.55)" stroke-width="1.3" />
+                                </pattern>
+                            </defs>
+                            <g transform="rotate(-12 130 60)">
+                                <!-- barrel, tapering to the XLR tail -->
+                                <path d="M 70 39 L 226 47 Q 232 47 232 52 L 232 68 Q 232 73 226 73 L 70 81 Z" fill="url(#micBarrel)" />
+                                <path d="M 72 41.5 L 226 49" stroke="rgba(255,240,215,0.28)" stroke-width="1.5" fill="none" />
+                                <rect x="232" y="51" width="9" height="18" rx="2" fill="#0d0b09" />
+                                <!-- on/off switch with the tally light beside it -->
+                                <rect x="128" y="50" width="26" height="9" rx="2" fill="#0d0b09" />
+                                <rect x="130" y="51.5" width="11" height="6" rx="1.5" fill="#57504a" />
+                                <circle class="mic-tally" cx="168" cy="55" r="3.6" />
+                                <!-- collar and grille ball -->
+                                <rect x="64" y="34" width="12" height="52" rx="3" fill="url(#micBarrel)" />
+                                <rect x="64" y="34" width="12" height="3" rx="1.5" fill="rgba(255,240,215,0.3)" />
+                                <circle cx="42" cy="60" r="31" fill="url(#micGrille)" />
+                                <circle cx="42" cy="60" r="31" fill="url(#micMesh)" />
+                                <path d="M 42 29 V 91" stroke="rgba(20,16,12,0.5)" stroke-width="3" />
+                                <ellipse cx="32" cy="46" rx="13" ry="8" fill="rgba(255,255,255,0.22)" />
+                            </g>
+                        </svg>
+                    </div>
+                    <span class="mic-tag">
+                        <span class="mic-tag-text">● TAP TO RECORD</span>
+                        <span class="mic-tag-hint">or load / drop a loop</span>
+                        <span class="mic-meter" aria-hidden="true"><span class="mic-meter-fill"></span></span>
+                    </span>
+                </button>
+                <div class="mic-mode">
+                    <button class="mic-mode-btn active" type="button" data-mode="vocal" data-tooltip="Vocal — your take is sliced and dropped into the pocket on its own VOX row">Vocal</button>
+                    <button class="mic-mode-btn" type="button" data-mode="beatbox" data-tooltip="Beatbox — one bar of mouth drums: each hit goes on the kick, snare or hat row by how it sounds, on the step you made it, and the pads play your own sounds. The old pattern goes quiet while you record; a click keeps time.">Beatbox</button>
+                    <button class="mic-load-btn" type="button" data-tooltip="Load an audio loop or acapella (WAV, MP3, AAC…) onto its own row to chop, swap and copy. Dropping a file anywhere on the desk does the same.">Load ⏏</button>
+                </div>
+                <!-- Which input the mic lead is plugged into, and headphone monitoring -->
+                <div class="mic-io">
+                    <button class="mic-input-btn" type="button" aria-haspopup="true" aria-expanded="false" data-tooltip="Input: pick which microphone or audio interface to record from">Input ▾</button>
+                    <button class="mic-mon-btn" type="button" aria-pressed="false" data-tooltip="Monitor: hear the mic in your headphones while you set up and record. Headphones only — through speakers it feeds back.">Mon</button>
+                    <div class="mic-input-menu" hidden></div>
+                </div>
+                <button class="mic-erase" type="button" data-tooltip="Erase the voice take">✕ erase take</button>
+            </div>
+
+            <!-- Avatar (head-bob character) — tucked in front of the sampler near sticky note -->
+            <canvas id="avatar-canvas"></canvas>
+
+            <!-- Sampler centerpiece -->
+            <div class="sampler-stage">
+                <div class="sampler-wrap">
+                    <div class="sampler">
+                        <!-- Where the beat on the pads came from: taped to the sampler's top lip (BeatTag.js) -->
+                        <div id="beat-tag" class="beat-tag" hidden></div>
+                        <span class="screw tl" aria-hidden="true"></span>
+                        <span class="screw tr" aria-hidden="true"></span>
+                        <span class="screw bl" aria-hidden="true"></span>
+                        <span class="screw br" aria-hidden="true"></span>
+
+                        <div class="sampler-strip">
+                            <div class="brand-mark">
+                                <span class="dot"></span>
+                                KB-3000 SAMPLER
+                            </div>
+                            <div class="lcd">
+                                <div class="lcd-boot" aria-live="polite"></div>
+                                <div class="lcd-msg" aria-live="polite"></div>
+                                <div class="lcd-cell">
+                                    <div class="lbl">BPM</div>
+                                    <span class="v" data-bind="bpm"> 88</span>
+                                </div>
+                                <div class="lcd-cell">
+                                    <div class="lbl">STEP</div>
+                                    <span class="v" data-bind="step">--</span>
+                                </div>
+                                <div class="lcd-cell">
+                                    <div class="lbl">MODE</div>
+                                    <span class="v" data-bind="mode">FRICTION</span>
+                                </div>
+                                <div class="lcd-cell">
+                                    <div class="lbl">SWING</div>
+                                    <span class="v" data-bind="humanize">0%</span>
+                                </div>
+                            </div>
+                            <div id="humanize-container" class="chassis-pot"></div>
+                            <div id="note-repeat" class="mode-toggle note-repeat">
+                                <div class="lbl">Note<br/>Repeat</div>
+                                <button class="mode-btn active" type="button" data-art="" data-tooltip="Plain step entry — tap a pad to switch it on or off">Step</button>
+                                <button class="mode-btn" type="button" data-art="flam" data-tooltip="Flam — tap a pad to add a soft grace hit just ahead of it">Flam</button>
+                                <button class="mode-btn" type="button" data-art="drag" data-tooltip="Drag — two grace hits leading into the pad">Drag</button>
+                                <button class="mode-btn" type="button" data-art="roll2" data-tooltip="Roll ×2 — two hits inside the step, stretched to follow the swing">R×2</button>
+                                <button class="mode-btn" type="button" data-art="roll3" data-tooltip="Roll ×3 — three hits inside the step, stretched to follow the swing">R×3</button>
+                                <button class="mode-btn" type="button" data-art="trip" data-tooltip="Lazy triplet — three hits across two steps, leaning with the swing">Trip</button>
+                            </div>
+                        </div>
+
+                        <!-- Grid mounts here — Grid.js produces .track rows -->
+                        <div id="app" class="tracks"></div>
+                    </div>
+
+                    <!-- Chassis sticker -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Transport bar -->
+        <div class="transport">
+            <div class="transport-group">
+                <button id="play-btn" class="transport-btn primary" type="button" data-tooltip="Start or stop the sequencer (Space)">▶ Play</button>
+                <div class="tempo-display">
+                    <span>Tempo</span>
+                    <input id="tempo-input" class="tempo-num" type="number" min="30" max="240" value="88" step="1" data-tooltip="Tempo in BPM (30–240). Type it, drag it up or down, or press TAP in time." />
+                    <button id="tap-btn" class="tempo-tap" type="button" data-tooltip="Press in time with the beat you hear to set the tempo (T)">Tap</button>
+                </div>
+                <button id="save-btn" class="transport-btn save-btn" type="button" data-state="empty" hidden data-tooltip="Keep this beat on a disk (S)">
+                    <svg class="save-icon save-icon-disk" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h13l3 3v13H4z"></path><path d="M8 4v6h7V4"></path><path d="M7 20v-7h10v7"></path></svg>
+                    <svg class="save-icon save-icon-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"></path></svg>
+                    <span class="save-word">Save</span>
+                    <span class="save-count" hidden></span>
+                </button>
+                <!-- A guest's disks are held by this browser, not kept (HeldSign.js) -->
+                <button id="save-warn" class="transport-btn save-warn" type="button" hidden aria-label="Why this beat could be lost" aria-expanded="false">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5 1.5 21h21zm0 4.1 7 12.4H5zM11 10v5h2v-5zm0 6.2v2h2v-2z"></path></svg>
+                </button>
+                <!-- Shown once, the first time a visitor has a beat playing (SaveNudge.js) -->
+                <!-- What a press of SAVE says when there is nothing to save (SaveKey.js) -->
+                <span id="save-hint" class="save-nudge" role="status" hidden></span>
+                <span id="save-nudge" class="save-nudge" role="status" hidden>keep this one? hit <b>SAVE</b> (or press S)</span>
+            </div>
+
+            <div class="transport-group">
+                <button id="clear-btn" class="transport-btn" type="button" data-tooltip="Clear every active step on the pattern">Clear</button>
+                <button id="reset-samples-btn" class="transport-btn reset-samples-btn" type="button" data-tooltip="Restore the default drum samples">Reset Samples</button>
+                <button id="mixer-btn" class="transport-btn mixer-btn" type="button" aria-pressed="false" data-tooltip="Mixer: swap every row's pads for a level fader. Press again to get the pads back. (M)">Mixer</button>
+            </div>
+
+            <div class="transport-group">
+                <div id="hihat-mode-toggle" class="mode-toggle">
+                    <div class="lbl">Hi-Hat</div>
+                    <button class="mode-btn active" type="button" data-mode="friction" data-tooltip="Hi-hats stay tight while kick drags — creates tension">Friction</button>
+                    <button class="mode-btn" type="button" data-mode="limp" data-tooltip="Hi-hats drag late with the kick — laid-back groove">Limp</button>
+                    <button class="mode-btn" type="button" data-mode="live" data-tooltip="Hi-hats rush ahead of the beat — forward energy">Live</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="importmap">
+  {
+    "imports": {
+      "@rive-app/canvas": "https://cdn.jsdelivr.net/npm/@rive-app/canvas@2.34.0/+esm"
+    }
+  }
+</script>
+    <!-- How it works (ADR-0080): what the desk does that a grid does not, the keys and the tour -->
+    <div class="how-veil" id="how" hidden>
+        <article class="how-sheet" role="dialog" aria-modal="true" aria-labelledby="how-title" tabindex="-1">
+            <button type="button" class="how-shut" aria-label="Close">×</button>
+            <h2 id="how-title">Not a grid. <em>A drummer.</em></h2>
+            <p class="how-lede">Draw a beat in most sequencers and it comes back dead straight, every hit the same. Knockbox plays yours the way a drummer would: late where it should drag, early where it should push, soft where a hand goes soft. A love letter to <strong>J Dilla</strong> and the crooked swing he got out of a sampler. Here is what is going on under the pads.</p>
+            <div class="how-list">
+                <section>
+                    <h3>The pocket</h3>
+                    <p>Turn the swing dial up and the kick drags behind the beat while the snare jumps ahead of it. That push and pull is the drunk walk. <strong>Friction</strong>, <strong>Limp</strong> and <strong>Live</strong> are three ways of holding it.</p>
+                </section>
+                <section>
+                    <h3>A hand on every hit</h3>
+                    <p>The one lands hard, the kick between the beats sits back, the hats rise and fall across the bar. Nothing you have to draw: it is how a hand plays, worked out for the beat on your pads.</p>
+                </section>
+                <section>
+                    <h3>Ghost notes</h3>
+                    <p>Each drum has a <strong>Ghost</strong> dial. Turn it up for the quiet notes in between, the ones you feel more than hear.</p>
+                </section>
+                <section>
+                    <h3>The switch-up</h3>
+                    <p>No drummer plays bar two like bar one. Say yes when he asks and every second bar answers the first, with a lead-back into the top. The notes he adds show on the pads with a dashed rim.</p>
+                </section>
+                <section>
+                    <h3>Your loop, locked in</h3>
+                    <p>Drop in a loop and it is fitted to your tempo, its hits found and chopped. Drag a hit onto the grid and the audio stretches to fit, same pitch. <strong>Follow</strong> leans the chops on your kick, snare or hats, so the sample swings with the drums.</p>
+                </section>
+                <section>
+                    <h3>Sing it, beatbox it</h3>
+                    <p>Record a vocal over the beat and <strong>Tune</strong> puts it in your loop's key. Beatbox into the mic and it lands on the pads as a pattern.</p>
+                </section>
+                <section>
+                    <h3>A drummer who listens</h3>
+                    <p>He hears your loop and watches your pads, then speaks up: a snare a step off, a kick fighting the bass, a groove worth trying. Try it, keep it or put it back. He suggests. It is your beat.</p>
+                </section>
+                <section>
+                    <h3>Take it with you</h3>
+                    <p>MIDI, WAV, stems, or the groove on its own to lay over your drums in your DAW. Every nudge and ghost note comes out as it was played.</p>
+                </section>
+            </div>
+            <div class="how-foot">
+                <dl class="how-keys" aria-label="Keyboard shortcuts">
+                    <div><dt><kbd>Space</kbd></dt><dd>play / stop</dd></div>
+                    <div><dt><kbd>1</kbd>–<kbd>4</kbd></dt><dd>hit a drum (Shift: mute its row)</dd></div>
+                    <div><dt><kbd>↑</kbd> <kbd>↓</kbd></dt><dd>tempo (Shift: by 5)</dd></div>
+                    <div><dt><kbd>T</kbd></dt><dd>tap the tempo</dd></div>
+                    <div><dt><kbd>R</kbd></dt><dd>record a take</dd></div>
+                    <div><dt><kbd>M</kbd></dt><dd>mixer</dd></div>
+                    <div><dt><kbd>S</kbd></dt><dd>save the beat</dd></div>
+                    <div><dt><kbd>Del</kbd></dt><dd>pull the hovered marker</dd></div>
+                    <div><dt><kbd>?</kbd></dt><dd>this page</dd></div>
+                </dl>
+                <button type="button" class="how-tour desk-key is-hot">Take the tour</button>
+            </div>
+        </article>
+    </div>
+
+    <!-- Async module: the desk is fully in the HTML/CSS; do not let a 236-file module graph hold up first paint or DOMContentLoaded. -->
+    <script type="module" src="./src/main.js" async></script>
+
+
+</body>
+
+</html>

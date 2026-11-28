@@ -1,0 +1,631 @@
+{
+  "id": "59gww8uvzq",
+  "title": "fUji",
+  "bpm": 88,
+  "sentAt": 1795037937458,
+  "audioIncluded": true,
+  "mixed": false,
+  "inCrate": true,
+  "plays": 14,
+  "flippedFrom": null,
+  "createdAt": 1795013002101,
+  "updatedAt": 1795520125993,
+  "version": 1,
+  "by": {
+    "name": "bizzle",
+    "face": "moon"
+  },
+  "mine": false,
+  "chain": [
+    {
+      "id": "59gww8uvzq",
+      "title": "fUji",
+      "by": {
+        "name": "bizzle",
+        "face": "moon"
+      }
+    }
+  ],
+  "flips": 0,
+  "state": {
+    "transport": {
+      "bpm": 88
+    },
+    "steps": {
+      "track-0_0": {
+        "id": "track-0_0",
+        "active": true,
+        "art": null
+      },
+      "track-0_1": {
+        "id": "track-0_1",
+        "active": false,
+        "art": null
+      },
+      "track-0_2": {
+        "id": "track-0_2",
+        "active": false,
+        "art": null
+      },
+      "track-0_3": {
+        "id": "track-0_3",
+        "active": true,
+        "art": null
+      },
+      "track-0_4": {
+        "id": "track-0_4",
+        "active": false,
+        "art": null
+      },
+      "track-0_5": {
+        "id": "track-0_5",
+        "active": false,
+        "art": null
+      },
+      "track-0_6": {
+        "id": "track-0_6",
+        "active": false,
+        "art": null
+      },
+      "track-0_7": {
+        "id": "track-0_7",
+        "active": true,
+        "art": null
+      },
+      "track-0_8": {
+        "id": "track-0_8",
+        "active": false,
+        "art": null
+      },
+      "track-0_9": {
+        "id": "track-0_9",
+        "active": false,
+        "art": null
+      },
+      "track-0_10": {
+        "id": "track-0_10",
+        "active": false,
+        "art": null
+      },
+      "track-0_11": {
+        "id": "track-0_11",
+        "active": true,
+        "art": null
+      },
+      "track-0_12": {
+        "id": "track-0_12",
+        "active": false,
+        "art": null
+      },
+      "track-0_13": {
+        "id": "track-0_13",
+        "active": false,
+        "art": null
+      },
+      "track-0_14": {
+        "id": "track-0_14",
+        "active": false,
+        "art": null
+      },
+      "track-0_15": {
+        "id": "track-0_15",
+        "active": false,
+        "art": null
+      },
+      "track-1_0": {
+        "id": "track-1_0",
+        "active": false,
+        "art": null
+      },
+      "track-1_1": {
+        "id": "track-1_1",
+        "active": false,
+        "art": null
+      },
+      "track-1_2": {
+        "id": "track-1_2",
+        "active": false,
+        "art": null
+      },
+      "track-1_3": {
+        "id": "track-1_3",
+        "active": false,
+        "art": null
+      },
+      "track-1_4": {
+        "id": "track-1_4",
+        "active": true,
+        "art": null
+      },
+      "track-1_5": {
+        "id": "track-1_5",
+        "active": false,
+        "art": null
+      },
+      "track-1_6": {
+        "id": "track-1_6",
+        "active": false,
+        "art": null
+      },
+      "track-1_7": {
+        "id": "track-1_7",
+        "active": false,
+        "art": null
+      },
+      "track-1_8": {
+        "id": "track-1_8",
+        "active": false,
+        "art": null
+      },
+      "track-1_9": {
+        "id": "track-1_9",
+        "active": false,
+        "art": null
+      },
+      "track-1_10": {
+        "id": "track-1_10",
+        "active": false,
+        "art": null
+      },
+      "track-1_11": {
+        "id": "track-1_11",
+        "active": false,
+        "art": null
+      },
+      "track-1_12": {
+        "id": "track-1_12",
+        "active": true,
+        "art": null
+      },
+      "track-1_13": {
+        "id": "track-1_13",
+        "active": false,
+        "art": null
+      },
+      "track-1_14": {
+        "id": "track-1_14",
+        "active": false,
+        "art": null
+      },
+      "track-1_15": {
+        "id": "track-1_15",
+        "active": false,
+        "art": null
+      },
+      "track-2_0": {
+        "id": "track-2_0",
+        "active": true,
+        "art": null
+      },
+      "track-2_1": {
+        "id": "track-2_1",
+        "active": false,
+        "art": null
+      },
+      "track-2_2": {
+        "id": "track-2_2",
+        "active": true,
+        "art": null
+      },
+      "track-2_3": {
+        "id": "track-2_3",
+        "active": false,
+        "art": null
+      },
+      "track-2_4": {
+        "id": "track-2_4",
+        "active": true,
+        "art": null
+      },
+      "track-2_5": {
+        "id": "track-2_5",
+        "active": false,
+        "art": null
+      },
+      "track-2_6": {
+        "id": "track-2_6",
+        "active": true,
+        "art": null
+      },
+      "track-2_7": {
+        "id": "track-2_7",
+        "active": false,
+        "art": null
+      },
+      "track-2_8": {
+        "id": "track-2_8",
+        "active": true,
+        "art": null
+      },
+      "track-2_9": {
+        "id": "track-2_9",
+        "active": false,
+        "art": null
+      },
+      "track-2_10": {
+        "id": "track-2_10",
+        "active": true,
+        "art": null
+      },
+      "track-2_11": {
+        "id": "track-2_11",
+        "active": false,
+        "art": null
+      },
+      "track-2_12": {
+        "id": "track-2_12",
+        "active": true,
+        "art": null
+      },
+      "track-2_13": {
+        "id": "track-2_13",
+        "active": false,
+        "art": null
+      },
+      "track-2_14": {
+        "id": "track-2_14",
+        "active": true,
+        "art": null
+      },
+      "track-2_15": {
+        "id": "track-2_15",
+        "active": true,
+        "art": null
+      },
+      "track-3_0": {
+        "id": "track-3_0",
+        "active": false,
+        "art": null
+      },
+      "track-3_1": {
+        "id": "track-3_1",
+        "active": false,
+        "art": null
+      },
+      "track-3_2": {
+        "id": "track-3_2",
+        "active": false,
+        "art": null
+      },
+      "track-3_3": {
+        "id": "track-3_3",
+        "active": false,
+        "art": null
+      },
+      "track-3_4": {
+        "id": "track-3_4",
+        "active": false,
+        "art": null
+      },
+      "track-3_5": {
+        "id": "track-3_5",
+        "active": false,
+        "art": null
+      },
+      "track-3_6": {
+        "id": "track-3_6",
+        "active": false,
+        "art": null
+      },
+      "track-3_7": {
+        "id": "track-3_7",
+        "active": false,
+        "art": null
+      },
+      "track-3_8": {
+        "id": "track-3_8",
+        "active": false,
+        "art": null
+      },
+      "track-3_9": {
+        "id": "track-3_9",
+        "active": false,
+        "art": null
+      },
+      "track-3_10": {
+        "id": "track-3_10",
+        "active": true,
+        "art": null
+      },
+      "track-3_11": {
+        "id": "track-3_11",
+        "active": false,
+        "art": null
+      },
+      "track-3_12": {
+        "id": "track-3_12",
+        "active": false,
+        "art": null
+      },
+      "track-3_13": {
+        "id": "track-3_13",
+        "active": false,
+        "art": null
+      },
+      "track-3_14": {
+        "id": "track-3_14",
+        "active": false,
+        "art": null
+      },
+      "track-3_15": {
+        "id": "track-3_15",
+        "active": false,
+        "art": null
+      }
+    },
+    "humanizeValue": 68,
+    "grooveSettings": {
+      "hihatMode": "friction",
+      "switchUp": false
+    },
+    "trackSettings": {
+      "0": {
+        "swingLocked": false,
+        "ghostQuantity": 0,
+        "sound": "deep",
+        "muted": false
+      },
+      "1": {
+        "swingLocked": false,
+        "ghostQuantity": 0,
+        "sound": "edge",
+        "muted": false
+      },
+      "2": {
+        "swingLocked": false,
+        "ghostQuantity": 36,
+        "sound": null,
+        "muted": false
+      },
+      "3": {
+        "swingLocked": false,
+        "ghostQuantity": 0,
+        "sound": null,
+        "muted": false
+      }
+    },
+    "mix": {
+      "0": 90,
+      "1": 80,
+      "2": 80,
+      "3": 80,
+      "smp": 74,
+      "vox": 80
+    },
+    "vox": {
+      "mode": "vocal",
+      "bars": 2,
+      "origin": "mic",
+      "takeBpm": 88,
+      "tightness": 100,
+      "follow": "kick",
+      "offset": 0,
+      "chop": "auto",
+      "resolution": "16",
+      "gain": 1,
+      "muted": false,
+      "erased": false,
+      "fx": 0,
+      "tune": false,
+      "key": null,
+      "loading": null,
+      "slices": []
+    },
+    "smp": {
+      "bars": 4,
+      "origin": "file",
+      "takeBpm": 90,
+      "tightness": 100,
+      "follow": "snare",
+      "offset": 0.018145161290321177,
+      "chop": "beats",
+      "resolution": "16",
+      "gain": 1.0929432505836947,
+      "muted": false,
+      "erased": false,
+      "fx": 62,
+      "tune": false,
+      "key": {
+        "name": "F# MIN",
+        "scale": [
+          6,
+          8,
+          9,
+          11,
+          1,
+          2,
+          4
+        ],
+        "cents": 0
+      },
+      "loading": null,
+      "slices": [
+        {
+          "id": 0,
+          "onset": 0,
+          "at": 0,
+          "start": 0,
+          "end": 0.6606666666666666,
+          "stretch": 1,
+          "source": 0,
+          "muted": false
+        },
+        {
+          "id": 1,
+          "onset": 0.6666666666666666,
+          "at": 0.6666666666666666,
+          "start": 0.6606666666666666,
+          "end": 1.3273333333333333,
+          "stretch": 1,
+          "source": 1,
+          "muted": false
+        },
+        {
+          "id": 2,
+          "onset": 1.3333333333333333,
+          "at": 1.3333333333333333,
+          "start": 1.3273333333333333,
+          "end": 1.994,
+          "stretch": 1,
+          "source": 2,
+          "muted": false
+        },
+        {
+          "id": 3,
+          "onset": 2,
+          "at": 2,
+          "start": 1.994,
+          "end": 2.6606666666666667,
+          "stretch": 1,
+          "source": 3,
+          "muted": false
+        },
+        {
+          "id": 4,
+          "onset": 2.6666666666666665,
+          "at": 2.6666666666666665,
+          "start": 2.6606666666666667,
+          "end": 3.3273333333333333,
+          "stretch": 1,
+          "source": 4,
+          "muted": false
+        },
+        {
+          "id": 5,
+          "onset": 3.333333333333333,
+          "at": 3.333333333333333,
+          "start": 3.3273333333333333,
+          "end": 3.9939999999999998,
+          "stretch": 1,
+          "source": 5,
+          "muted": false
+        },
+        {
+          "id": 6,
+          "onset": 3.9999999999999996,
+          "at": 3.9999999999999996,
+          "start": 3.9939999999999998,
+          "end": 4.660666666666666,
+          "stretch": 1,
+          "source": 6,
+          "muted": false
+        },
+        {
+          "id": 7,
+          "onset": 4.666666666666666,
+          "at": 4.666666666666666,
+          "start": 4.660666666666666,
+          "end": 5.327333333333333,
+          "stretch": 1,
+          "source": 7,
+          "muted": false
+        },
+        {
+          "id": 8,
+          "onset": 5.333333333333333,
+          "at": 5.333333333333333,
+          "start": 5.327333333333333,
+          "end": 5.994,
+          "stretch": 1,
+          "source": 8,
+          "muted": false
+        },
+        {
+          "id": 9,
+          "onset": 6,
+          "at": 6,
+          "start": 5.994,
+          "end": 6.660666666666667,
+          "stretch": 1,
+          "source": 9,
+          "muted": false
+        },
+        {
+          "id": 10,
+          "onset": 6.666666666666667,
+          "at": 6.666666666666667,
+          "start": 6.660666666666667,
+          "end": 7.327333333333334,
+          "stretch": 1,
+          "source": 10,
+          "muted": false
+        },
+        {
+          "id": 11,
+          "onset": 7.333333333333334,
+          "at": 7.333333333333334,
+          "start": 7.327333333333334,
+          "end": 7.994,
+          "stretch": 1,
+          "source": 11,
+          "muted": false
+        },
+        {
+          "id": 12,
+          "onset": 8,
+          "at": 8,
+          "start": 7.994,
+          "end": 8.660666666666666,
+          "stretch": 1,
+          "source": 12,
+          "muted": false
+        },
+        {
+          "id": 13,
+          "onset": 8.666666666666666,
+          "at": 8.666666666666666,
+          "start": 8.660666666666666,
+          "end": 9.327333333333332,
+          "stretch": 1,
+          "source": 13,
+          "muted": false
+        },
+        {
+          "id": 14,
+          "onset": 9.333333333333332,
+          "at": 9.333333333333332,
+          "start": 9.327333333333332,
+          "end": 9.993999999999998,
+          "stretch": 1,
+          "source": 14,
+          "muted": false
+        },
+        {
+          "id": 15,
+          "onset": 9.999999999999998,
+          "at": 9.999999999999998,
+          "start": 9.993999999999998,
+          "end": 10.666666666666666,
+          "stretch": 1,
+          "source": 15,
+          "muted": false
+        }
+      ]
+    }
+  },
+  "takes": {},
+  "drums": {},
+  "audio": [],
+  "mix": {
+    "sha256": "bce2a7bcdab05a10b333000fb22d06e24d071b190532e12d1f7b1b605597534a",
+    "bytes": 1924408
+  },
+  "tags": [
+    "88 BPM",
+    "FRICTION",
+    "DRUNK 68",
+    "LOOP"
+  ],
+  "stickers": {
+    "offered": [
+      "drums",
+      "pocket",
+      "chop"
+    ],
+    "counts": {
+      "chop": 1,
+      "pocket": 1
+    },
+    "mine": []
+  }
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#283332"><title>Greyhaven Harbour</title>
+<style>
+:root{font-family:Arial,Helvetica,sans-serif;color:#fff8e8;background:#263534;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;overflow:hidden}#scene{width:100vw;height:100dvh;display:block;touch-action:none}
+header,footer{position:fixed;left:0;right:0;pointer-events:none;transition:opacity .2s}.clean header,.clean footer{visibility:hidden;opacity:0}
+header{top:0;padding:clamp(20px,3vw,46px);display:flex;align-items:center;gap:13px;background:linear-gradient(180deg,#152b3780,transparent)}
+.mark{width:36px;height:35px;display:flex;align-items:flex-end;gap:2px;transform:skew(-13deg);overflow:hidden}
+.mark i{display:block;width:9px;background:#f3d79b;height:60%}.mark i:nth-child(2){height:100%}.mark i:nth-child(3){height:79%}
+h1{margin:0;font-size:clamp(23px,2vw,34px);letter-spacing:-.055em;font-weight:600;line-height:1.0}
+.sub,#position,#tip,#load-status{font:600 10px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.13em;text-transform:uppercase}
+.sub{margin:5px 0 0;color:#fff4db}
+footer{bottom:0;padding:42px clamp(20px,3vw,46px) max(25px,env(safe-area-inset-bottom));background:linear-gradient(0deg,#0a1d24ba,transparent);display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+#position{display:flex;align-items:center;gap:10px;color:#f4d399}#position:before{content:"";display:block;width:25px;height:2px;background:currentColor}
+#view-name{font:normal clamp(26px,3vw,46px)/1.06 Georgia,serif;letter-spacing:-.045em;margin:6px 0 0;text-shadow:0 1px 15px #13202966}
+nav{display:flex;align-items:center;gap:0;pointer-events:auto;background:rgba(18,35,39,.88);border:1px solid #ffffff47;border-radius:5px;padding:4px}
+button{font:600 13px Arial,sans-serif;color:inherit;background:none;border:0;cursor:pointer;min-width:39px;height:35px;display:grid;place-items:center;border-radius:2px}button:hover,button[aria-pressed=true]{background:#ffffff1f}button:focus-visible{outline:2px solid #f3d79b;outline-offset:1px}
+#prev:before,#next:before{content:"";width:7px;height:7px;border:solid currentColor;border-width:1.5px 1.5px 0 0;transform:rotate(45deg)}#prev:before{transform:rotate(-135deg)}
+#play:before{content:"";width:0;height:0;border:solid transparent;border-width:5px 0 5px 8px;border-left-color:currentColor}
+#play[data-playing=true]:before{border:solid currentColor;border-width:0 2px;width:5px;height:10px}
+#orbit{border-left:1px solid #ffffff38;border-radius:0;padding:0 14px;margin-left:3px}
+#tip{position:absolute;bottom:83px;right:clamp(20px,3vw,46px);background:#192c31c9;border-radius:2px;padding:5px 8px;font-size:9px}
+#loading{position:fixed;inset:0;display:grid;place-content:center;text-align:center;background:#213637;color:#f0dfbf}#loading strong{font:38px Georgia,serif}#loading[hidden],#tip[hidden]{display:none}
+@media(max-width:600px){footer{align-items:flex-start;flex-direction:column;gap:13px;padding-bottom:20px}header{padding:18px}.mark{width:30px;height:29px}.sub,#position{font-size:9px}#tip{left:20px;right:auto;bottom:141px}.sub{margin-top:3px}}
+</style></head>
+<body><canvas id="scene" aria-label="Animated three-dimensional seaport with cargo cranes and a harbour tug"></canvas>
+<header><span class="mark" aria-hidden="true"><i></i><i></i><i></i></span><div><h1>Greyhaven</h1><p class="sub">Container terminal</p></div></header>
+<footer><div><span id="position">01 / 05</span><h2 id="view-name">Harbour approach</h2></div><span id="tip" hidden>Drag to orbit · Scroll or pinch to zoom</span><nav aria-label="Camera controls">
+<button id="prev" aria-label="Previous viewpoint" title="Previous viewpoint"></button><button id="play" aria-label="Pause camera tour"></button><button id="next" aria-label="Next viewpoint" title="Next viewpoint"></button><button id="orbit" aria-pressed="false">Orbit</button></nav></footer>
+<div id="loading" role="status"><strong>Greyhaven</strong><p id="load-status">Preparing the harbour</p></div>
+<script defer src="./greyhaven.js"></script></body></html>
