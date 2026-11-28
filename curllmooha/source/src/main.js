@@ -37292,7 +37292,7 @@ const v_ = "/assets/blob-b1Pb5j2E.webp",
   F_ = "/assets/two-shores-YkroSTtX.webp",
   D_ = "",
   G_ = "curllmooha",
-  L_ = "hi, i’m vipin",
+  L_ = "hi",
   N_ = [
     "i’m a creative developer from india. most of what i write is three.js and glsl, with gsap for anything that has to move.",
     "this meadow is my 3d portfolio. every project is somewhere in it, so have a look around. you can walk anywhere you like. the birds will judge you, but you can.",
@@ -37473,7 +37473,7 @@ const v_ = "/assets/blob-b1Pb5j2E.webp",
     ]),
   ),
   yP = Bc.map((t) => K0[t.slug] ?? null),
-  H_ = "/vipin-pathak-resume.pdf",
+  H_ = "/resume.pdf",
   Cn = {
     name: "",
     role: "creative developer",
@@ -38097,7 +38097,7 @@ function i4() {
           jsxRuntime.jsxs("a", {
             className: "clay-button",
             href: H_,
-            download: "Vipin-Pathak-Resume.pdf",
+            download: "Resume.pdf",
             children: [
               "download pdf",
               jsxRuntime.jsx("i", {
@@ -38969,7 +38969,7 @@ const m4 = {
     },
     {
       label: "just saying hi",
-      subject: "Hi Vipin",
+      subject: "Hello",
     },
   ],
   Pp = new Intl.DateTimeFormat("en-IN", {
@@ -39110,7 +39110,7 @@ function v4() {
       }),
       jsxRuntime.jsx("ul", {
         className: "contact-links",
-        "aria-label": "Other places to find Vipin",
+        "aria-label": "Other places",
         children: e.map((i) =>
           jsxRuntime.jsx(
             "li",
